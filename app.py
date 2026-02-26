@@ -64,6 +64,7 @@ def register():
     finally:
         conn.close()
         cursor.close()
+        
 
 
 #Login
@@ -90,7 +91,7 @@ def login():
                 'message': 'Email and Password are required'
             }), 400
 
-        cursor.execute("SELECT * FROM users WHERE Email = %s and Status = 'Active'", (email,))
+        cursor.execute("SELECT * FROM users WHERE Email = %s and Status = 'Active' and Role='Super_Admin'", (email,))
         user = cursor.fetchone()
 
         if not user:
@@ -120,8 +121,8 @@ def login():
         }), 500
 
     finally:
-        cursor.close()
         conn.close()
+        cursor.close()
 
 #Add Admin/New Organization By Super Admin
 @app.route('/addadmin', methods = ['GET','POST'])
@@ -169,8 +170,9 @@ def addadmin():
         })
     
     finally:
-        cursor.close()
         conn.close()
+        cursor.close()
+        
 
 
 
