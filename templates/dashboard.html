@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Super Admin Dashboard</title>
+    <style>
+        body { font-family: Arial; background: #eef2f7; }
+        .container {
+            width: 400px;
+            margin: 60px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background: #bd2130; }
+        .msg { text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Add New Admin</h2>
+
+    <input type="text" id="name" placeholder="Admin Name">
+    <input type="email" id="email" placeholder="Admin Email">
+    <input type="password" id="password" placeholder="Admin Password">
+    <input type="text" id="contact" placeholder="Contact">
+    <button onclick="addAdmin()">Add Admin</button>
+
+    <div class="msg" id="message"></div>
+</div>
+
+<script>
+async function addAdmin() {
+    const response = await fetch("/addadmin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            contact: document.getElementById("contact").value,
+            profile_img: ""
+        })
+    });
+
+    const data = await response.json();
+    document.getElementById("message").innerText = data.message;
+}
+</script>
+
+</body>
+</html>
