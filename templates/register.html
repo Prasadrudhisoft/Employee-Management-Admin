@@ -1,63 +1,1555 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Super Admin Registration</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Admin Registration | Employee Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body { font-family: Arial; background: #f4f6f9; }
-        .container {
-            width: 350px;
-            margin: 80px auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        input, button {
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== FULL SCREEN BACKGROUND ===== */
+        .bg-fullscreen {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .bg-fullscreen img {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
-        button {
-            background: #007bff;
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(2, 6, 23, 0.85) 0%,
+                rgba(15, 23, 42, 0.80) 40%,
+                rgba(30, 41, 59, 0.75) 70%,
+                rgba(15, 23, 42, 0.82) 100%
+            );
+            z-index: 1;
+        }
+
+        .bg-gradient-anim {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 50% 60% at 15% 50%, rgba(139, 92, 246, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 50% at 85% 30%, rgba(99, 102, 241, 0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 50% 90%, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
+            z-index: 2;
+            animation: gradientPulse 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes gradientPulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 100vh;
+            padding: 40px 60px;
+            gap: 60px;
+        }
+
+        /* ===== LEFT BRANDING ===== */
+        .branding-section {
+            flex: 1;
+            max-width: 500px;
             color: white;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 50px;
+            animation: slideIn 0.8s ease both;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .brand-logo-icon {
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .brand-logo-icon i {
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand-logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-logo-text span {
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .hero-content {
+            animation: slideIn 0.8s 0.15s ease both;
+        }
+
+        .hero-content .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #c4b5fd;
+            margin-bottom: 20px;
+            backdrop-filter: blur(6px);
+        }
+
+        .badge i {
+            font-size: 10px;
+        }
+
+        .hero-content h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.035em;
+            margin-bottom: 18px;
+        }
+
+        .hero-content h1 .highlight {
+            background: linear-gradient(135deg, #a78bfa, #c4b5fd, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: textShimmer 4s ease infinite;
+        }
+
+        @keyframes textShimmer {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+
+        .hero-content p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 400px;
+            margin-bottom: 36px;
+        }
+
+        /* Privileges list */
+        .privileges-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 36px;
+            animation: slideIn 0.8s 0.3s ease both;
+        }
+
+        .privilege-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+        }
+
+        .privilege-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateX(4px);
+        }
+
+        .privilege-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .privilege-icon i {
+            font-size: 15px;
+            color: #a78bfa;
+        }
+
+        .privilege-text h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .privilege-text p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0;
+        }
+
+        /* Security notice */
+        .security-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 18px;
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            animation: slideIn 0.8s 0.45s ease both;
+        }
+
+        .security-notice i {
+            font-size: 16px;
+            color: #fbbf24;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .security-notice div h5 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fcd34d;
+            margin-bottom: 4px;
+        }
+
+        .security-notice div p {
+            font-size: 11px;
+            color: rgba(252, 211, 77, 0.7);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* ===== REGISTER CARD ===== */
+        .register-card {
+            width: 420px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+            animation: cardEntry 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .register-card::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .register-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .register-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        @keyframes cardEntry {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .register-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.4), transparent);
+        }
+
+        .register-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+            pointer-events: none;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card header */
+        .card-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .card-header .icon-wrap {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(99, 102, 241, 0.25));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+
+        .card-header .icon-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), transparent, rgba(99, 102, 241, 0.3));
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .card-header .icon-wrap i {
+            font-size: 24px;
+            color: #c4b5fd;
+        }
+
+        .card-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .card-header .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #c4b5fd;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-header .admin-badge i {
+            font-size: 9px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+            color: #f87171;
+            font-size: 10px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i.field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.25s;
+            z-index: 1;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 42px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: white;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .input-wrap input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .input-wrap input:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-wrap input:focus {
+            border-color: #a78bfa;
+            background: rgba(139, 92, 246, 0.06);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        }
+
+        .input-wrap:focus-within i.field-icon {
+            color: #a78bfa;
+        }
+
+        /* Password toggle */
+        .pass-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
             border: none;
             cursor: pointer;
+            padding: 4px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            transition: color 0.2s;
+            z-index: 1;
+            width: auto;
+            box-shadow: none;
         }
-        button:hover { background: #0056b3; }
-        .msg { text-align: center; margin-top: 10px; }
+
+        .pass-toggle:hover { color: rgba(255, 255, 255, 0.6); }
+
+        /* Password strength */
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-fill.weak { width: 33%; background: #f87171; }
+        .strength-fill.medium { width: 66%; background: #fbbf24; }
+        .strength-fill.strong { width: 100%; background: #34d399; }
+
+        .strength-text {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .strength-text.weak { color: #f87171; }
+        .strength-text.medium { color: #fbbf24; }
+        .strength-text.strong { color: #34d399; }
+
+        /* Error state */
+        .input-wrap.has-error input {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.06);
+        }
+
+        .input-wrap.has-error i.field-icon { color: #f87171; }
+
+        .error-text {
+            font-size: 10px;
+            color: #fca5a5;
+            margin-top: 6px;
+            display: none;
+            padding-left: 2px;
+        }
+
+        .input-wrap.has-error ~ .error-text { display: block; }
+
+        /* Profile upload */
+        .profile-upload {
+            margin-bottom: 22px;
+        }
+
+        .profile-upload > label {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .upload-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .upload-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .upload-preview i {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .upload-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-info h5 {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3px;
+        }
+
+        .upload-info p {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            margin: 0;
+        }
+
+        .upload-info p span {
+            color: #a78bfa;
+        }
+
+        #profileInput {
+            display: none;
+        }
+
+        /* Button */
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+            position: relative;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-register:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-register:hover::before { left: 100%; }
+
+        .btn-register:active {
+            transform: translateY(0);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Message */
+        .msg-alert {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: alertIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes alertIn {
+            from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .msg-alert.error {
+            display: flex;
+            background: rgba(248, 113, 113, 0.12);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            color: #fca5a5;
+        }
+
+        .msg-alert.success {
+            display: flex;
+            background: rgba(52, 211, 153, 0.12);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            color: #6ee7b7;
+        }
+
+        .msg-alert i { font-size: 14px; flex-shrink: 0; }
+
+        /* Login link */
+        .login-link {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .login-link a:hover { color: #c4b5fd; text-decoration: underline; }
+
+        /* Success section */
+        .success-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            text-align: center;
+        }
+
+        .success-section.active {
+            display: flex;
+            animation: fadeSlide 0.5s ease;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-checkmark {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .success-checkmark i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .success-section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .success-section p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+            max-width: 260px;
+        }
+
+        .btn-success-action {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-success-action:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: translateY(-2px);
+        }
+
+        /* Bottom bar */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            background: linear-gradient(0deg, rgba(2, 6, 23, 0.8), transparent);
+        }
+
+        .bottom-bar .left-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .bottom-bar .left-info .secure-icon {
+            color: #34d399;
+        }
+
+        .bottom-bar .right-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .bottom-bar .right-links a {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .bottom-bar .right-links a:hover { color: rgba(255, 255, 255, 0.6); }
+
+        /* ==================== RESPONSIVE BREAKPOINTS ==================== */
+
+        /* Large Desktop */
+        @media (max-width: 1200px) {
+            .main-container {
+                padding: 40px 50px;
+                gap: 50px;
+            }
+            .hero-content h1 {
+                font-size: 38px;
+            }
+        }
+
+        /* Medium Desktop / Small Laptop */
+        @media (max-width: 1024px) {
+            .main-container {
+                padding: 30px 40px;
+                gap: 40px;
+            }
+            .branding-section {
+                max-width: 420px;
+            }
+            .hero-content h1 {
+                font-size: 34px;
+            }
+            .hero-content p {
+                font-size: 14px;
+            }
+            .register-card {
+                width: 400px;
+                padding: 32px;
+            }
+        }
+
+        /* Tablet Landscape */
+        @media (max-width: 900px) {
+            .branding-section {
+                display: none;
+            }
+            .main-container {
+                justify-content: center;
+                padding: 20px;
+            }
+            .register-card {
+                width: 100%;
+                max-width: 420px;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .bottom-bar {
+                padding: 12px 24px;
+            }
+        }
+
+        /* Tablet Portrait */
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+            }
+            .main-container {
+                padding: 16px;
+                min-height: auto;
+                padding-bottom: 80px;
+            }
+            .register-card {
+                max-width: 100%;
+                padding: 28px 24px;
+                border-radius: 20px;
+                margin-top: 10px;
+            }
+            .card-header .icon-wrap {
+                width: 54px;
+                height: 54px;
+            }
+            .card-header .icon-wrap i {
+                font-size: 22px;
+            }
+            .card-header h2 {
+                font-size: 20px;
+            }
+            .bottom-bar {
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px 20px;
+            }
+            .bottom-bar .right-links {
+                gap: 12px;
+            }
+        }
+
+        /* Large Phone */
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 12px;
+                padding-bottom: 90px;
+            }
+            .register-card {
+                padding: 24px 20px;
+                border-radius: 18px;
+            }
+            .card-header {
+                margin-bottom: 24px;
+            }
+            .card-header .icon-wrap {
+                width: 50px;
+                height: 50px;
+            }
+            .card-header .icon-wrap i {
+                font-size: 20px;
+            }
+            .card-header h2 {
+                font-size: 18px;
+            }
+            .card-header p {
+                font-size: 12px;
+            }
+            .card-header .admin-badge {
+                font-size: 9px;
+                padding: 3px 10px;
+            }
+            .form-group {
+                margin-bottom: 16px;
+            }
+            .form-group label {
+                font-size: 11px;
+            }
+            .input-wrap input {
+                padding: 12px 12px 12px 38px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+            .input-wrap i.field-icon {
+                font-size: 13px;
+                left: 12px;
+            }
+            .upload-area {
+                padding: 12px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .upload-preview {
+                width: 60px;
+                height: 60px;
+            }
+            .btn-register {
+                padding: 13px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+            .login-link {
+                font-size: 12px;
+                margin-top: 16px;
+            }
+            .msg-alert {
+                font-size: 11px;
+                padding: 10px 12px;
+            }
+        }
+
+        /* Small Phone */
+        @media (max-width: 360px) {
+            .main-container {
+                padding: 10px;
+            }
+            .register-card {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+            .card-header .icon-wrap {
+                width: 46px;
+                height: 46px;
+            }
+            .card-header .icon-wrap i {
+                font-size: 18px;
+            }
+            .card-header h2 {
+                font-size: 17px;
+            }
+            .input-wrap input {
+                padding: 11px 10px 11px 36px;
+                font-size: 13px;
+            }
+            .password-strength {
+                margin-top: 6px;
+            }
+            .strength-text {
+                font-size: 9px;
+            }
+            .btn-register {
+                padding: 12px;
+            }
+            .success-checkmark {
+                width: 60px;
+                height: 60px;
+            }
+            .success-checkmark i {
+                font-size: 28px;
+            }
+            .success-section h3 {
+                font-size: 18px;
+            }
+            .success-section p {
+                font-size: 12px;
+            }
+        }
+
+        /* Extra Small Phone */
+        @media (max-width: 320px) {
+            .register-card {
+                padding: 18px 14px;
+            }
+            .card-header h2 {
+                font-size: 16px;
+            }
+            .card-header .admin-badge {
+                font-size: 8px;
+            }
+            .input-wrap input {
+                padding: 10px 10px 10px 34px;
+                font-size: 12px;
+            }
+            .input-wrap i.field-icon {
+                font-size: 12px;
+                left: 10px;
+            }
+            .btn-register {
+                font-size: 12px;
+                padding: 11px;
+            }
+            .bottom-bar .right-links a {
+                font-size: 10px;
+            }
+        }
+
+        /* Landscape mode on phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+            }
+            .main-container {
+                min-height: auto;
+                padding: 16px;
+                padding-bottom: 70px;
+            }
+            .register-card {
+                max-height: none;
+            }
+            .card-header {
+                margin-bottom: 20px;
+            }
+            .card-header .icon-wrap {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 12px;
+            }
+            .card-header .icon-wrap i {
+                font-size: 18px;
+            }
+            .form-group {
+                margin-bottom: 14px;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .input-wrap input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .bg-fullscreen, .bg-overlay, .bg-gradient-anim, .bottom-bar {
+                display: none;
+            }
+            .register-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Super Admin Register</h2>
+    <!-- ===== FULL SCREEN BACKGROUND ===== -->
+    <div class="bg-fullscreen">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+             alt="Office Background"
+             loading="eager">
+    </div>
+    <div class="bg-overlay"></div>
+    <div class="bg-gradient-anim"></div>
 
-    <input type="text" id="name" placeholder="Full Name">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <input type="text" id="contact" placeholder="Contact">
-    <button onclick="register()">Register</button>
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-container">
 
-    <div class="msg" id="message"></div>
-</div>
+        <!-- LEFT BRANDING -->
+        <div class="branding-section">
+            <div class="brand-logo">
+                <div class="brand-logo-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="brand-logo-text"> <span>EMS</span></div>
+            </div>
+
+            <div class="hero-content">
+                <div class="badge">
+                    <i class="fas fa-crown"></i>
+                    Super Admin Access
+                </div>
+                <h1>Take full<br>control of<br><span class="highlight">your system.</span></h1>
+                <p>Register as Super Admin to unlock complete administrative capabilities and manage your entire organization.</p>
+            </div>
+
+            <div class="privileges-list">
+                <div class="privilege-item">
+                    <div class="privilege-icon">
+                        <i class="fas fa-users-gear"></i>
+                    </div>
+                    <div class="privilege-text">
+                        <h4>User Management</h4>
+                        <p>Create, modify, and manage all user accounts</p>
+                    </div>
+                </div>
+                <div class="privilege-item">
+                    <div class="privilege-icon">
+                        <i class="fas fa-sliders"></i>
+                    </div>
+                    <div class="privilege-text">
+                        <h4>System Configuration</h4>
+                        <p>Full access to all system settings</p>
+                    </div>
+                </div>
+                <div class="privilege-item">
+                    <div class="privilege-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="privilege-text">
+                        <h4>Analytics & Reports</h4>
+                        <p>View comprehensive reports and insights</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="security-notice">
+                <i class="fas fa-shield-halved"></i>
+                <div>
+                    <h5>Secure Registration</h5>
+                    <p>Super Admin credentials are encrypted and stored securely. Use a strong password.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGISTER CARD -->
+        <div class="register-card">
+            <div class="card-content">
+                <div class="card-header">
+                    <div class="icon-wrap">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2>Super Admin Register</h2>
+                    <p>Create your administrator account</p>
+                    <div class="admin-badge">
+                        <i class="fas fa-crown"></i>
+                        Highest Privilege Level
+                    </div>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>Full Name <span class="required">*</span></label>
+                        <div class="input-wrap" id="nameWrap">
+                            <i class="fas fa-user field-icon"></i>
+                            <input type="text" id="name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="error-text">Full name is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <div class="input-wrap" id="emailWrap">
+                            <i class="fas fa-envelope field-icon"></i>
+                            <input type="email" id="email" placeholder="admin@company.com" required>
+                        </div>
+                        <div class="error-text">Please enter a valid email</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password <span class="required">*</span></label>
+                        <div class="input-wrap" id="passWrap">
+                            <i class="fas fa-lock field-icon"></i>
+                            <input type="password" id="password" placeholder="Create a strong password" required>
+                            <button type="button" class="pass-toggle" onclick="togglePass()">
+                                <i class="far fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText">Use 8+ characters with letters & numbers</span>
+                        </div>
+                        <div class="error-text">Password must be at least 8 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Number <span class="required">*</span></label>
+                        <div class="input-wrap" id="contactWrap">
+                            <i class="fas fa-phone field-icon"></i>
+                            <input type="tel" id="contact" placeholder="+1 (555) 000-0000" required>
+                        </div>
+                        <div class="error-text">Contact number is required</div>
+                    </div>
+
+                    <div class="profile-upload">
+                        <label>Profile Image (Optional)</label>
+                        <div class="upload-area" onclick="document.getElementById('profileInput').click()">
+                            <div class="upload-preview" id="uploadPreview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="upload-info">
+                                <h5>Upload Photo</h5>
+                                <p>Click to browse or <span>drag & drop</span></p>
+                            </div>
+                        </div>
+                        <input type="file" id="profileInput" accept="image/*" onchange="previewImage(this)">
+                    </div>
+
+                    <button type="submit" class="btn-register" id="registerBtn">
+                        <div class="btn-content">
+                            <div class="btn-spinner" id="spinner"></div>
+                            <span id="btnLabel">Create Account</span>
+                            <i class="fas fa-arrow-right" id="btnArrow" style="font-size: 12px;"></i>
+                        </div>
+                    </button>
+                </form>
+
+                <!-- Success Section -->
+                <div class="success-section" id="successSection">
+                    <div class="success-checkmark">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3>Account Created!</h3>
+                    <p>Your Super Admin account has been successfully registered.</p>
+                    <button class="btn-success-action" onclick="window.location.href='/login'">
+                        Continue to Login
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="msg-alert" id="message"></div>
+
+                <div class="login-link">
+                    Already have an account? <a href="/">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <div class="bottom-bar">
+        <div class="left-info">
+            <i class="fas fa-lock secure-icon"></i>
+            <span>256-bit SSL Encrypted</span>
+        </div>
+        <div class="right-links">
+            <a href="#">Help</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">© 2025 EMS</a>
+        </div>
+    </div>
 
 <script>
-async function register() {
-    const response = await fetch("/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            name: document.getElementById("name").value,
-            email: document.getElementById("email").value,
-            password: document.getElementById("password").value,
-            contact: document.getElementById("contact").value,
-            Profile_img: ""
-        })
+    let profileImageBase64 = "";
+
+    // Toggle password visibility
+    function togglePass() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('eyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'far fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'far fa-eye';
+        }
+    }
+
+    // Profile image preview
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profileImageBase64 = e.target.result;
+                document.getElementById('uploadPreview').innerHTML = `<img src="${e.target.result}" alt="Profile">`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Validate email
+    function validEmail(e) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    }
+
+    // Shake animation
+    function shake(el) {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = 'shakeAnim 0.4s ease';
+    }
+
+    const s = document.createElement('style');
+    s.textContent = `
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    `;
+    document.head.appendChild(s);
+
+    // Password strength checker
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        
+        document.getElementById('passWrap').classList.remove('has-error');
+        
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+        if (/\d/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+        strengthFill.className = 'strength-fill';
+        strengthText.className = 'strength-text';
+
+        if (password.length === 0) {
+            strengthText.textContent = 'Use 8+ characters with letters & numbers';
+        } else if (strength <= 1) {
+            strengthFill.classList.add('weak');
+            strengthText.classList.add('weak');
+            strengthText.textContent = 'Weak password';
+        } else if (strength <= 2) {
+            strengthFill.classList.add('medium');
+            strengthText.classList.add('medium');
+            strengthText.textContent = 'Medium strength';
+        } else {
+            strengthFill.classList.add('strong');
+            strengthText.classList.add('strong');
+            strengthText.textContent = 'Strong password!';
+        }
     });
 
-    const data = await response.json();
-    document.getElementById("message").innerText = data.message;
-}
+    // Clear errors on input
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            const wrap = this.closest('.input-wrap');
+            if (wrap) wrap.classList.remove('has-error');
+        });
+    });
+
+    // Form submission
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('registerBtn');
+        const spinner = document.getElementById('spinner');
+        const label = document.getElementById('btnLabel');
+        const arrow = document.getElementById('btnArrow');
+        const msg = document.getElementById('message');
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const contact = document.getElementById('contact').value.trim();
+
+        // Reset
+        msg.className = 'msg-alert';
+        msg.style.display = 'none';
+        document.querySelectorAll('.input-wrap').forEach(w => w.classList.remove('has-error'));
+
+        // Validate
+        let hasError = false;
+        
+        if (!name) {
+            document.getElementById('nameWrap').classList.add('has-error');
+            hasError = true;
+        }
+        if (!email || !validEmail(email)) {
+            document.getElementById('emailWrap').classList.add('has-error');
+            hasError = true;
+        }
+        if (!password || password.length < 8) {
+            document.getElementById('passWrap').classList.add('has-error');
+            hasError = true;
+        }
+        if (!contact) {
+            document.getElementById('contactWrap').classList.add('has-error');
+            hasError = true;
+        }
+
+        if (hasError) {
+            shake(btn);
+            return;
+        }
+
+        // Loading state
+        btn.disabled = true;
+        spinner.style.display = 'block';
+        arrow.style.display = 'none';
+        label.textContent = 'Creating...';
+
+        try {
+            const response = await fetch("/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password,
+                    contact: contact,
+                    Profile_img: profileImageBase64
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success" || response.ok) {
+                document.getElementById('registerForm').style.display = 'none';
+                document.querySelector('.login-link').style.display = 'none';
+                document.getElementById('successSection').classList.add('active');
+                document.querySelector('.card-header').style.display = 'none';
+            } else {
+                showMsg('error', 'fa-circle-exclamation', data.message || 'Registration failed.');
+                resetBtn();
+            }
+        } catch (err) {
+            showMsg('error', 'fa-triangle-exclamation', 'Connection failed. Try again.');
+            resetBtn();
+        }
+
+        function showMsg(type, icon, text) {
+            msg.className = `msg-alert ${type}`;
+            msg.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
+        }
+
+        function resetBtn() {
+            btn.disabled = false;
+            spinner.style.display = 'none';
+            arrow.style.display = 'inline';
+            label.textContent = 'Create Account';
+            shake(btn);
+        }
+    });
+
+    // Drag and drop
+    const uploadArea = document.querySelector('.upload-area');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.style.borderColor = 'rgba(139, 92, 246, 0.6)';
+            uploadArea.style.background = 'rgba(139, 92, 246, 0.1)';
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+        });
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+            const input = document.getElementById('profileInput');
+            input.files = files;
+            previewImage(input);
+        }
+    });
 </script>
 
 </body>
