@@ -1172,6 +1172,21 @@
 
                             <div class="form-group">
                                 <label>
+                                    <i class="fas fa-building"></i>
+                                    Organization Name <span class="required">*</span>
+                                </label>
+                                <div class="input-group" id="orgWrap">
+                                    <i class="fas fa-building icon"></i>
+                                    <input type="text" id="org_name" placeholder="e.g. Acme Corporation" required>
+                                </div>
+                                <div class="error-msg">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Please enter organization name
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
                                     <i class="fas fa-image"></i>
                                     Profile Picture <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span>
                                 </label>
@@ -1223,200 +1238,168 @@
     </main>
 
 <script>
-    let profileImageBase64 = "";
     let adminCount = 0;
 
-    // Toggle Sidebar
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('mobile-open');
-        document.getElementById('mobileOverlay').classList.toggle('active');
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+    document.getElementById('mobileOverlay').classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('mobileOverlay').classList.remove('active');
+}
+
+function togglePassword() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'far fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'far fa-eye';
+    }
+}
+
+// ✅ Fixed: no base64, just preview
+function handleImageUpload(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Image must be under 2 MB.');
+        input.value = '';
+        return;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    document.getElementById('uploadPreview').innerHTML = `<img src="${previewUrl}" alt="Preview">`;
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+        this.closest('.input-group').classList.remove('has-error');
+    });
+});
+
+document.getElementById('addAdminForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const name     = document.getElementById('name').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const contact  = document.getElementById('contact').value.trim();
+    const org_name = document.getElementById('org_name').value.trim();
+    const msgAlert = document.getElementById('msgAlert');
+
+    // Reset errors
+    msgAlert.className = 'msg-alert';
+    document.querySelectorAll('.input-group').forEach(g => g.classList.remove('has-error'));
+
+    // Validate
+    let hasError = false;
+    if (!name)                      { document.getElementById('nameWrap').classList.add('has-error');    hasError = true; }
+    if (!email || !isValidEmail(email)) { document.getElementById('emailWrap').classList.add('has-error');   hasError = true; }
+    if (!password || password.length < 8) { document.getElementById('passWrap').classList.add('has-error');    hasError = true; }
+    if (!contact)                   { document.getElementById('contactWrap').classList.add('has-error'); hasError = true; }
+    if (!org_name)                  { document.getElementById('orgWrap').classList.add('has-error');     hasError = true; }
+
+    if (hasError) return;
+
+    const btn = this.querySelector('button[type="submit"]');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+    btn.disabled = true;
+
+    try {
+        // ✅ Fixed: FormData instead of JSON
+        const formData = new FormData();
+        formData.append('name',     name);
+        formData.append('email',    email);
+        formData.append('password', password);
+        formData.append('contact',  contact);
+        formData.append('org_name', org_name);
+
+        const profileFile = document.getElementById('profileInput').files[0];
+        if (profileFile) formData.append('profile_img', profileFile);
+
+        const response = await fetch("/addadmin", {
+            method: "POST",
+            // ✅ No Content-Type header — browser sets it automatically
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+            showAlert('success', 'fa-check-circle', data.message || 'Admin added successfully!');
+            this.reset();
+            document.getElementById('uploadPreview').innerHTML = '<i class="fas fa-user"></i>';
+            addAdminToList(name, email);
+        } else {
+            showAlert('error', 'fa-exclamation-circle', data.message || 'Failed to add admin');
+        }
+    } catch (err) {
+        showAlert('error', 'fa-exclamation-triangle', 'Connection error. Please try again.');
     }
 
-    function closeMobileMenu() {
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+});
+
+function showAlert(type, icon, message) {
+    const alert = document.getElementById('msgAlert');
+    alert.className = `msg-alert ${type}`;
+    alert.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+    setTimeout(() => { alert.className = 'msg-alert'; }, 5000);
+}
+
+function addAdminToList(name, email) {
+    const list = document.getElementById('adminList');
+    const emptyState = list.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+
+    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const colors = ['purple', 'blue', 'green', 'orange', 'pink'];
+    const color = colors[adminCount % colors.length];
+
+    const adminItem = document.createElement('div');
+    adminItem.className = 'admin-item';
+    adminItem.innerHTML = `
+        <div class="admin-info-row">
+            <div class="admin-avatar-sm ${color}">${initials}</div>
+            <div class="admin-details">
+                <h4>${name}</h4>
+                <p>${email}</p>
+            </div>
+        </div>
+        <div class="admin-status active">
+            <span class="dot"></span>
+            Active
+        </div>
+    `;
+    adminItem.style.animation = 'slideUp 0.3s ease';
+    list.insertBefore(adminItem, list.firstChild);
+
+    adminCount++;
+    document.getElementById('adminCount').textContent = adminCount;
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '/';
+    }
+}
+
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024) {
         document.getElementById('sidebar').classList.remove('mobile-open');
         document.getElementById('mobileOverlay').classList.remove('active');
     }
-
-    // Toggle Password
-    function togglePassword() {
-        const input = document.getElementById('password');
-        const icon = document.getElementById('eyeIcon');
-        
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.className = 'far fa-eye-slash';
-        } else {
-            input.type = 'password';
-            icon.className = 'far fa-eye';
-        }
-    }
-
-    // Image Upload
-    function handleImageUpload(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                profileImageBase64 = e.target.result;
-                document.getElementById('uploadPreview').innerHTML = 
-                    `<img src="${e.target.result}" alt="Preview">`;
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // Validate Email
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    // Clear Errors
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', function() {
-            this.closest('.input-group').classList.remove('has-error');
-        });
-    });
-
-    // Form Submit
-    document.getElementById('addAdminForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const contact = document.getElementById('contact').value.trim();
-        const msgAlert = document.getElementById('msgAlert');
-
-        // Reset errors
-        msgAlert.className = 'msg-alert';
-        document.querySelectorAll('.input-group').forEach(g => g.classList.remove('has-error'));
-
-        // Validate
-        let hasError = false;
-        
-        if (!name) {
-            document.getElementById('nameWrap').classList.add('has-error');
-            hasError = true;
-        }
-        if (!email || !isValidEmail(email)) {
-            document.getElementById('emailWrap').classList.add('has-error');
-            hasError = true;
-        }
-        if (!password || password.length < 8) {
-            document.getElementById('passWrap').classList.add('has-error');
-            hasError = true;
-        }
-        if (!contact) {
-            document.getElementById('contactWrap').classList.add('has-error');
-            hasError = true;
-        }
-
-        if (hasError) return;
-
-        // Submit
-        const btn = this.querySelector('button[type="submit"]');
-        const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-        btn.disabled = true;
-
-        try {
-            const response = await fetch("/addadmin", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name,
-                    email,
-                    password,
-                    contact,
-                    profile_img: profileImageBase64
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.status === "success" || response.ok) {
-                showAlert('success', 'fa-check-circle', data.message || 'Admin added successfully!');
-                
-                // Reset form
-                this.reset();
-                document.getElementById('uploadPreview').innerHTML = '<i class="fas fa-user"></i>';
-                profileImageBase64 = "";
-                
-                // Add to list
-                addAdminToList(name, email, contact);
-            } else {
-                showAlert('error', 'fa-exclamation-circle', data.message || 'Failed to add admin');
-            }
-        } catch (err) {
-            showAlert('error', 'fa-exclamation-triangle', 'Connection error. Please try again.');
-        }
-
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-    });
-
-    function showAlert(type, icon, message) {
-        const alert = document.getElementById('msgAlert');
-        alert.className = `msg-alert ${type}`;
-        alert.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-        
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-            alert.className = 'msg-alert';
-        }, 5000);
-    }
-
-    function addAdminToList(name, email, contact) {
-        const list = document.getElementById('adminList');
-        const emptyState = list.querySelector('.empty-state');
-        
-        // Remove empty state if exists
-        if (emptyState) {
-            emptyState.remove();
-        }
-
-        // Create initials
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        const colors = ['purple', 'blue', 'green', 'orange', 'pink'];
-        const color = colors[adminCount % colors.length];
-
-        // Create admin item
-        const adminItem = document.createElement('div');
-        adminItem.className = 'admin-item';
-        adminItem.innerHTML = `
-            <div class="admin-info-row">
-                <div class="admin-avatar-sm ${color}">${initials}</div>
-                <div class="admin-details">
-                    <h4>${name}</h4>
-                    <p>${email}</p>
-                </div>
-            </div>
-            <div class="admin-status active">
-                <span class="dot"></span>
-                Active
-            </div>
-        `;
-        
-        adminItem.style.animation = 'slideUp 0.3s ease';
-        list.insertBefore(adminItem, list.firstChild);
-
-        // Update count
-        adminCount++;
-        document.getElementById('adminCount').textContent = adminCount;
-    }
-
-    function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-            window.location.href = '/';
-        }
-    }
-
-    // Resize Handler
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 1024) {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            document.getElementById('mobileOverlay').classList.remove('active');
-        }
-    });
+});
 </script>
 
 </body>
