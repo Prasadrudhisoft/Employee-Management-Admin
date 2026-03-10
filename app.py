@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from connector import get_connection
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
+import pymysql
 
 app = Flask(__name__)
 
@@ -16,6 +17,11 @@ def login_superadmin():
 @app.route('/dashboard')
 def superadmin_dashboard():
     return render_template('dashboard.html')
+
+@app.route('/admin_status')
+def admin_status():
+    return render_template('Admin_status.html')
+
 
 
 import os
@@ -142,6 +148,92 @@ def addadmin():
     finally:
         conn.close()
         cursor.close()
+
+
+@app.route('/get_emp', methods=['GET'])
+def get_emp():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        cursor.execute("SELECT * FROM USERS WHERE Status = 'Active' and role = 'Admin'")
+        active_users = cursor.fetchall()
+
+        cursor.execute("SELECT * FROM USERS WHERE Status != 'Active' and role = 'Admin'")
+        deactive_users = cursor.fetchall()
+
+        if not active_users and not deactive_users:
+            return jsonify({
+                'status':'fail',
+                'message':'No User Found'
+            })
+        
+        else:
+            return jsonify({
+                'status':'success',
+                'message':'Employees Fetched Succcessfully..',
+                'active_users':active_users,
+                'deactive_users':deactive_users
+            })
+        
+
+    except Exception as e:
+        return jsonify({
+            'status':'Error',
+            'message':str(e)
+        })
+    
+# ── Add this route to your manager_bp in manager.py ──
+
+@app.route('/toggle_emp_status', methods=['POST'])
+def toggle_emp_status():
+    """
+    Toggle employee status between 'Active' and 'Deactive'.
+    Expects JSON body: { "user_id": "<employee_uuid>" }
+    Only operates on employees belonging to the manager's org.
+    """
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        data = request.get_json()
+        user_id = data.get('user_id')
+
+        if not user_id:
+            return jsonify({'status': 'error', 'message': 'user_id is required'}), 400
+
+        # Fetch current status — scoped to manager's org for security
+        cursor.execute(
+            "SELECT id, name, status FROM users WHERE id = %s AND role = 'Admin'",
+            (user_id,)
+        )
+        emp = cursor.fetchone()
+
+        if not emp:
+            return jsonify({'status': 'error', 'message': 'Employee not found'}), 404
+
+        # Flip status
+        new_status = 'Deactive' if emp['status'] == 'Active' else 'Active'
+
+        cursor.execute(
+            "UPDATE users SET status = %s WHERE id = %s",
+            (new_status, user_id)
+        )
+        conn.commit()
+
+        return jsonify({
+            'status': 'success',
+            'message': f"Employee status updated to '{new_status}'.",
+            'user_id': user_id,
+            'new_status': new_status
+        })
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
         
 
 if __name__ == '__main__':
