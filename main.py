@@ -46,6 +46,54 @@ def save_profile_image(file):
     file.save(filepath)
     return filepath.replace('\\', '/')
 
+@app.route("/register", methods=['GET','POST'])
+def register():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("select * from users where Role='Super_Admin'")
+        super_admin = cursor.fetchall()
+        if not super_admin:
+        
+            data = request.json
+
+            id = str(uuid.uuid4())
+            name = data.get('name')
+            email = data.get('email')
+            password = data.get('password')
+            Role = "Super_Admin"
+            Profile_img = data.get('Profile_img')
+            Status = "Active"
+            Contact = data.get('contact')
+            #org_id = str(uuid.uuid4())
+            hashed_password = generate_password_hash(password)
+
+
+            cursor.execute("INSERT INTO users(id, Name, Email, Password, Role, Profile_img, Status, Contact, created_at) Values(%s,%s,%s,%s,%s,%s,%s,%s,NOW())",(id, name,email,hashed_password,Role, Profile_img, Status, Contact))
+            conn.commit()
+        
+            return jsonify({
+                'status': 'success',
+                'message': 'Super Admin Registered Successfully.'
+            })
+        else:
+            return jsonify({
+                'status': 'fail',
+                'message': 'Super Admin Is Already Registered'
+            })
+    
+    except Exception as e:
+        print(e)
+        return jsonify({
+        "status": "error",
+        "message": str(e)
+    }), 500
+
+    finally:
+        conn.close()
+        cursor.close()
+
 #Login
 @app.route('/login', methods=['POST'])
 def login():
@@ -104,8 +152,8 @@ def login():
         cursor.close()
 
 #Add Admin/New Organization By Super Admin
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/addadmin', methods=['GET', 'POST'])
+def addadmin():
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -116,7 +164,7 @@ def register():
         name     = data.get('name')
         email    = data.get('email')
         password = data.get('password')
-        role     = "Super_Admin"
+        role     = "Admin"
         status   = "Active"
         contact  = data.get('contact')
         org_name = data.get('org_name')
