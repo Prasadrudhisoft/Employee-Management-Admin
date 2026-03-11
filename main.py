@@ -104,8 +104,8 @@ def login():
         cursor.close()
 
 #Add Admin/New Organization By Super Admin
-@app.route('/addadmin', methods=['GET', 'POST'])
-def addadmin():
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     try:
         conn = get_connection()
         cursor = conn.cursor()
