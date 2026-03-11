@@ -116,7 +116,7 @@ def register():
         name     = data.get('name')
         email    = data.get('email')
         password = data.get('password')
-        role     = "Admin"
+        role     = "Super_Admin"
         status   = "Active"
         contact  = data.get('contact')
         org_name = data.get('org_name')
