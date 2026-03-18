@@ -4,14 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Employee Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #6366f1;
+            --primary-lighter: #e0e7ff;
+            --primary-subtle: #eef2ff;
+            --primary-glow: rgba(79, 70, 229, 0.18);
+            --success: #059669;
+            --success-light: #ecfdf5;
+            --success-border: #a7f3d0;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --danger-border: #fecaca;
+            --bg-white: #ffffff;
+            --bg-muted: #f1f5f9;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-tertiary: #64748b;
+            --text-muted: #94a3b8;
+            --text-placeholder: #cbd5e1;
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 20px;
+            --radius-full: 9999px;
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        html { font-size: 16px; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -22,9 +55,10 @@
             position: relative;
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
+            background: #0f172a;
         }
 
-        /* ===== FULL SCREEN BACKGROUND ===== */
+        /* ── BACKGROUND ── */
         .bg-fullscreen {
             position: fixed;
             inset: 0;
@@ -36,40 +70,38 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
         }
 
-        /* Dark overlay */
+        .bg-fullscreen img.loaded { opacity: 1; }
+
         .bg-overlay {
             position: fixed;
             inset: 0;
             background: linear-gradient(
                 135deg,
-                rgba(2, 6, 23, 0.78) 0%,
-                rgba(15, 23, 42, 0.72) 40%,
-                rgba(30, 41, 59, 0.68) 70%,
-                rgba(15, 23, 42, 0.75) 100%
+                rgba(15, 23, 42, 0.58) 0%,
+                rgba(30, 27, 75, 0.45) 50%,
+                rgba(15, 23, 42, 0.58) 100%
             );
             z-index: 1;
         }
 
-        /* Subtle animated gradient overlay */
         .bg-gradient-anim {
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 50% 60% at 15% 50%, rgba(37, 99, 235, 0.12) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 50% at 85% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 50% 90%, rgba(37, 99, 235, 0.06) 0%, transparent 60%);
+                radial-gradient(ellipse 50% 60% at 15% 50%, rgba(79,70,229,0.1) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 50% at 85% 30%, rgba(99,102,241,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 50% 90%, rgba(79,70,229,0.05) 0%, transparent 60%);
             z-index: 2;
             animation: gradientPulse 10s ease-in-out infinite alternate;
         }
 
-        @keyframes gradientPulse {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
+        @keyframes gradientPulse { 0% { opacity:0.6; } 100% { opacity:1; } }
 
-        /* ===== MAIN LAYOUT ===== */
+        /* ── LAYOUT ── */
         .main-container {
             position: relative;
             z-index: 3;
@@ -80,99 +112,86 @@
             max-width: 1200px;
             min-height: 100vh;
             padding: 40px 60px;
-            gap: 60px;
+            gap: 70px;
         }
 
-        /* ===== LEFT BRANDING ===== */
+        /* ── BRANDING ── */
         .branding-section {
             flex: 1;
             max-width: 540px;
             color: white;
+            animation: slideInLeft 0.7s cubic-bezier(0.4,0,0.2,1) both;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity:0; transform:translateX(-28px); }
+            to   { opacity:1; transform:translateX(0); }
         }
 
         .brand-logo {
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 56px;
-            animation: slideIn 0.8s ease both;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
+            gap: 13px;
+            margin-bottom: 54px;
         }
 
         .brand-logo-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 20px var(--primary-glow);
         }
 
-        .brand-logo-icon i {
-            font-size: 20px;
-            color: white;
-        }
+        .brand-logo-icon i { font-size: 18px; color: white; }
 
         .brand-logo-text {
             font-size: 21px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.03em;
         }
 
-        .brand-logo-text span {
-            font-weight: 400;
-            opacity: 0.7;
-        }
+        .brand-logo-text span { font-weight: 400; opacity: 0.65; }
 
-        .hero-content {
-            animation: slideIn 0.8s 0.15s ease both;
-        }
+        .hero-content { animation: slideInLeft 0.7s 0.1s cubic-bezier(0.4,0,0.2,1) both; }
 
-        .hero-content .badge {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 6px 16px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 100px;
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.85);
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: var(--radius-full);
+            font-size: 12px; font-weight: 500;
+            color: rgba(255,255,255,0.88);
             margin-bottom: 24px;
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
         }
 
-        .badge .dot {
-            width: 6px;
-            height: 6px;
+        .badge-dot {
+            width: 6px; height: 6px;
             border-radius: 50%;
             background: #34d399;
-            animation: pulse 2s ease-in-out infinite;
+            animation: dotPulse 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
-            50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+        @keyframes dotPulse {
+            0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(52,211,153,0.4); }
+            50%      { opacity:0.7; box-shadow:0 0 0 6px rgba(52,211,153,0); }
         }
 
         .hero-content h1 {
-            font-size: 48px;
-            font-weight: 800;
+            font-size: 46px; font-weight: 800;
             line-height: 1.12;
             letter-spacing: -0.035em;
-            margin-bottom: 20px;
+            color: white;
+            margin-bottom: 18px;
         }
 
         .hero-content h1 .highlight {
-            background: linear-gradient(135deg, #60a5fa, #a78bfa, #60a5fa);
+            background: linear-gradient(135deg, #a5b4fc, #818cf8, #c4b5fd);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -181,564 +200,409 @@
         }
 
         @keyframes textShimmer {
-            0%, 100% { background-position: 0% center; }
-            50% { background-position: 100% center; }
+            0%,100% { background-position: 0% center; }
+            50%      { background-position: 100% center; }
         }
 
         .hero-content p {
-            font-size: 16px;
-            line-height: 1.75;
-            color: rgba(255, 255, 255, 0.65);
+            font-size: 15.5px; line-height: 1.75;
+            color: rgba(255,255,255,0.62);
             max-width: 420px;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
 
-        /* Feature items */
         .features-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 48px;
-            animation: slideIn 0.8s 0.3s ease both;
+            gap: 12px;
+            margin-bottom: 40px;
+            animation: slideInLeft 0.7s 0.2s cubic-bezier(0.4,0,0.2,1) both;
         }
 
         .feature-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
+            display: flex; align-items: center; gap: 11px;
+            padding: 13px 15px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-lg);
             backdrop-filter: blur(6px);
-            transition: all 0.3s ease;
+            transition: background var(--transition-base), transform var(--transition-fast);
         }
 
-        .feature-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
+        .feature-card:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+        .feature-card i { font-size: 15px; color: #a5b4fc; width: 18px; flex-shrink:0; }
+        .feature-card span { font-size: 13px; color: rgba(255,255,255,0.82); font-weight: 500; }
 
-        .feature-card i {
-            font-size: 16px;
-            color: #60a5fa;
-            width: 20px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .feature-card span {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-
-        /* Stats */
         .stats-strip {
             display: flex;
-            gap: 40px;
-            animation: slideIn 0.8s 0.45s ease both;
+            gap: 38px;
+            animation: slideInLeft 0.7s 0.3s cubic-bezier(0.4,0,0.2,1) both;
         }
 
-        .stat {
-            display: flex;
-            flex-direction: column;
-        }
+        .stat { display: flex; flex-direction: column; }
 
         .stat-number {
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: white;
+            font-size: 28px; font-weight: 800;
+            letter-spacing: -0.02em; color: white;
         }
 
-        .stat-number .accent {
-            color: #60a5fa;
-        }
+        .stat-number .accent { color: #a5b4fc; }
 
         .stat-label {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.45);
-            font-weight: 500;
-            margin-top: 2px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 11.5px; color: rgba(255,255,255,0.42);
+            font-weight: 600; margin-top: 2px;
+            text-transform: uppercase; letter-spacing: 0.06em;
         }
 
-        /* ===== LOGIN CARD (Glass on image) ===== */
+        /* ── LOGIN CARD ── */
         .login-card {
-            width: 420px;
+            width: 430px;
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 44px 40px;
-            position: relative;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-2xl);
             overflow: hidden;
-            animation: cardEntry 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+            box-shadow: 0 32px 64px -12px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,255,255,0.06);
+            animation: cardEntry 0.75s 0.15s cubic-bezier(0.16,1,0.3,1) both;
         }
 
         @keyframes cardEntry {
-            from { opacity: 0; transform: translateY(30px) scale(0.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity:0; transform:translateY(28px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
         }
 
-        /* Top glow */
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 15%;
-            right: 15%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-        }
-
-        /* Inner subtle glow */
-        .login-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 120px;
-            background: linear-gradient(180deg, rgba(96, 165, 250, 0.04) 0%, transparent 100%);
-            pointer-events: none;
-            border-radius: 24px 24px 0 0;
-        }
-
-        .card-content {
+        /* ── CARD TOPBAR (matches Add Manager banner) ── */
+        .card-topbar {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+            padding: 24px 30px 20px;
             position: relative;
-            z-index: 1;
+            overflow: hidden;
         }
 
-        /* Card header */
-        .card-header {
-            text-align: center;
-            margin-bottom: 32px;
+        .card-topbar::before {
+            content:'';
+            position:absolute; top:-50%; right:-10%;
+            width:280px; height:280px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            pointer-events:none;
         }
 
-        .card-header .user-icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(167, 139, 250, 0.2));
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
+        .card-topbar-inner {
+            position:relative; z-index:1;
+            display:flex; align-items:center; gap:14px;
         }
 
-        .card-header .user-icon i {
-            font-size: 22px;
-            color: rgba(255, 255, 255, 0.9);
+        .card-icon {
+            width: 48px; height: 48px;
+            border-radius: var(--radius-lg);
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: white; flex-shrink:0;
         }
 
-        .card-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: white;
-            letter-spacing: -0.02em;
-            margin-bottom: 6px;
+        .card-topbar-text h2 {
+            font-size: 18px; font-weight: 700;
+            color: white; letter-spacing: -0.02em; margin-bottom: 3px;
         }
 
-        .card-header p {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.45);
-        }
+        .card-topbar-text p { font-size: 12.5px; color: rgba(255,255,255,0.7); }
 
-        /* Form */
+        /* ── CARD BODY ── */
+        .card-body { padding: 26px 30px 24px; }
+
+        /* ── FORM ── */
         .form-group {
-            margin-bottom: 20px;
+            display: flex; flex-direction: column; gap: 5px;
+            margin-bottom: 17px;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
+        .form-label {
+            font-size: 12.5px; font-weight: 600;
+            color: var(--text-primary);
+            display: flex; align-items: center; gap: 6px;
         }
 
-        .input-wrap {
-            position: relative;
-        }
+        .form-label i   { font-size: 11px; color: var(--primary); }
+        .form-label .req { color: var(--danger); margin-left: 1px; }
 
-        .input-wrap i.field-icon {
+        .field-hint { font-size: 11px; color: var(--text-muted); }
+
+        .input-wrap { position: relative; }
+
+        .input-wrap .icon {
             position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.3);
-            transition: color 0.25s;
-            z-index: 1;
+            left: 13px; top: 50%; transform: translateY(-50%);
+            font-size: 13px; color: var(--text-muted);
+            transition: color var(--transition-fast);
+            pointer-events: none; z-index: 1;
         }
 
         .input-wrap input {
             width: 100%;
-            padding: 14px 46px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            padding: 10px 14px 10px 38px;
+            background: var(--bg-muted);
+            border: 1.5px solid transparent;
+            border-radius: var(--radius-lg);
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: white;
+            font-size: 13.5px; color: var(--text-primary);
             outline: none;
-            transition: all 0.25s ease;
+            transition: all var(--transition-base);
         }
 
-        .input-wrap input::placeholder {
-            color: rgba(255, 255, 255, 0.25);
-        }
-
-        .input-wrap input:hover {
-            border-color: rgba(255, 255, 255, 0.18);
-            background: rgba(255, 255, 255, 0.08);
-        }
+        .input-wrap input::placeholder { color: var(--text-placeholder); }
+        .input-wrap input:hover { background: #eaecf2; }
 
         .input-wrap input:focus {
-            border-color: #60a5fa;
-            background: rgba(96, 165, 250, 0.06);
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
+            background: var(--bg-white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
         }
 
-        .input-wrap:focus-within i.field-icon {
-            color: #60a5fa;
+        .input-wrap:focus-within .icon { color: var(--primary); }
+
+        /* valid */
+        .input-wrap.valid input { border-color: var(--success); background: var(--success-light); }
+        .input-wrap.valid .icon { color: var(--success); }
+        .input-wrap.valid::after {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+            color: var(--success); font-size: 13px; pointer-events: none;
+        }
+        .input-wrap.valid.has-toggle::after { display: none; }
+
+        /* error */
+        .input-wrap.error input {
+            border-color: var(--danger);
+            background: var(--danger-light);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.07);
+        }
+        .input-wrap.error .icon { color: var(--danger); }
+
+        .field-err {
+            display: none; align-items: center; gap: 5px;
+            font-size: 11.5px; color: var(--danger); font-weight: 500;
+            animation: errIn .2s ease;
+        }
+        @keyframes errIn { from{opacity:0;transform:translateY(-3px);}to{opacity:1;transform:translateY(0);} }
+        .input-wrap.error ~ .field-err { display: flex; }
+
+        /* pw toggle */
+        .pw-toggle {
+            position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--text-muted); font-size: 13px; padding: 4px; z-index: 2;
+            transition: color var(--transition-fast);
+        }
+        .pw-toggle:hover { color: var(--text-secondary); }
+
+        /* autofill fix */
+        .input-wrap input:-webkit-autofill,
+        .input-wrap input:-webkit-autofill:hover,
+        .input-wrap input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--text-primary);
+            -webkit-box-shadow: 0 0 0px 1000px #f1f5f9 inset;
+            transition: background-color 5000s ease-in-out 0s;
         }
 
-        /* Password toggle */
-        .pass-toggle {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 15px;
-            transition: color 0.2s;
-            z-index: 1;
-            width: auto;
-            box-shadow: none;
-        }
-
-        .pass-toggle:hover { color: rgba(255, 255, 255, 0.6); }
-
-        /* Error state */
-        .input-wrap.has-error input {
-            border-color: #f87171;
-            background: rgba(248, 113, 113, 0.06);
-        }
-
-        .input-wrap.has-error i.field-icon { color: #f87171; }
-
-        .error-text {
-            font-size: 12px;
-            color: #fca5a5;
-            margin-top: 6px;
-            display: none;
-            padding-left: 2px;
-        }
-
-        .input-wrap.has-error ~ .error-text { display: block; }
-
-        /* Options row */
+        /* ── OPTIONS ROW ── */
         .options-row {
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             justify-content: space-between;
-            margin-bottom: 26px;
+            margin-bottom: 20px;
         }
 
         .remember {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            user-select: none;
+            display: flex; align-items: center; gap: 9px;
+            cursor: pointer; user-select: none;
         }
 
         .chk-box {
-            width: 18px;
-            height: 18px;
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+            width: 17px; height: 17px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-muted);
+            transition: background var(--transition-fast), border-color var(--transition-fast);
             flex-shrink: 0;
         }
 
-        .chk-box.active {
-            background: #3b82f6;
-            border-color: #3b82f6;
-        }
+        .chk-box.active { background: var(--primary); border-color: var(--primary); }
 
         .chk-box i {
-            font-size: 9px;
-            color: white;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-size: 8px; color: white;
+            opacity: 0; transform: scale(0);
+            transition: opacity var(--transition-fast), transform 150ms cubic-bezier(0.34,1.56,0.64,1);
         }
 
-        .chk-box.active i {
-            opacity: 1;
-            transform: scale(1);
-        }
+        .chk-box.active i { opacity: 1; transform: scale(1); }
 
-        .remember span {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-        }
+        .remember span { font-size: 12.5px; color: var(--text-tertiary); font-weight: 500; }
 
         .forgot-link {
-            font-size: 13px;
-            color: #60a5fa;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-size: 12.5px; color: var(--primary);
+            text-decoration: none; font-weight: 600;
+            transition: color var(--transition-fast);
         }
 
-        .forgot-link:hover { color: #93bbfc; text-decoration: underline; }
+        .forgot-link:hover { color: var(--primary-dark); text-decoration: underline; }
 
-        /* Button */
+        /* ── SUBMIT BUTTON ── */
         .btn-login {
             width: 100%;
-            padding: 15px;
-            background: #2563eb;
+            padding: 11px 20px;
+            background: var(--primary);
             border: none;
-            border-radius: 12px;
+            border-radius: var(--radius);
             color: white;
             font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 13.5px; font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-            position: relative;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all var(--transition-fast);
+            position: relative; overflow: hidden;
         }
 
         .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            content:'';
+            position:absolute; top:0; left:-100%; width:100%; height:100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
+            transition: left 0.5s ease;
         }
 
-        .btn-login:hover {
-            background: #1d4ed8;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+        .btn-login:hover:not(:disabled) {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 14px var(--primary-glow);
             transform: translateY(-1px);
         }
 
-        .btn-login:hover::before { left: 100%; }
-
-        .btn-login:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-        }
-
-        .btn-login:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            z-index: 1;
-        }
+        .btn-login:hover:not(:disabled)::before { left: 100%; }
+        .btn-login:active:not(:disabled) { transform: translateY(0); }
+        .btn-login:disabled { opacity:0.65; cursor:not-allowed; transform:none!important; }
+        .btn-login.btn-success { background: var(--success)!important; }
 
         .btn-spinner {
-            width: 18px;
-            height: 18px;
+            width: 16px; height: 16px;
             border: 2.5px solid rgba(255,255,255,0.3);
             border-top-color: white;
             border-radius: 50%;
-            animation: spin 0.65s linear infinite;
-            display: none;
+            animation: spin 0.6s linear infinite;
+            display: none; flex-shrink:0;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Message */
+        /* ── ALERT ── */
         .msg-alert {
-            margin-top: 16px;
-            padding: 13px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            animation: alertIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            padding: 12px 15px;
+            border-radius: var(--radius-lg);
+            font-size: 13px; font-weight: 500;
+            display: none; align-items: center; gap: 10px;
+            margin-bottom: 18px;
+            animation: errIn .25s ease;
         }
 
-        @keyframes alertIn {
-            from { opacity: 0; transform: translateY(-8px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
+        .msg-alert.error   { display:flex; background:var(--danger-light);  border:1px solid var(--danger-border);  color:var(--danger); }
+        .msg-alert.success { display:flex; background:var(--success-light); border:1px solid var(--success-border); color:var(--success); }
+        .msg-alert i { font-size: 15px; flex-shrink:0; }
+        .msg-alert-body .msg-title  { font-weight: 700; font-size: 13px; margin-bottom: 1px; }
+        .msg-alert-body .msg-detail { font-size: 12px; opacity: 0.88; }
 
-        .msg-alert.error {
-            display: flex;
-            background: rgba(248, 113, 113, 0.12);
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            color: #fca5a5;
-        }
-
-        .msg-alert.success {
-            display: flex;
-            background: rgba(52, 211, 153, 0.12);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-            color: #6ee7b7;
-        }
-
-        .msg-alert i { font-size: 15px; flex-shrink: 0; }
-
-        /* Divider */
+        /* ── DIVIDER ── */
         .divider {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin: 26px 0;
+            display: flex; align-items: center; gap: 14px;
+            margin: 18px 0 14px;
         }
-
         .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.08);
+            content:''; flex:1; height:1px; background: var(--border-light);
         }
-
         .divider span {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            white-space: nowrap;
+            font-size: 11px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
         }
 
-        /* Social */
-        .social-btns {
-            display: flex;
-            gap: 12px;
-        }
+        /* ── SOCIAL BUTTONS ── */
+        .social-btns { display: flex; gap: 10px; margin-bottom: 18px; }
 
         .s-btn {
             flex: 1;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            padding: 10px 14px;
+            background: var(--bg-muted);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.75);
-            transition: all 0.25s;
-            width: auto;
-            box-shadow: none;
+            font-size: 13px; font-weight: 600; color: var(--text-secondary);
+            transition: all var(--transition-fast);
         }
 
         .s-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.18);
-            transform: translateY(-1px);
+            background: var(--primary-subtle);
+            border-color: var(--primary-lighter);
+            color: var(--primary);
         }
 
-        .s-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
-        .s-btn i { font-size: 17px; }
+        .s-btn svg { width: 16px; height: 16px; flex-shrink:0; }
+        .s-btn i   { font-size: 16px; }
 
-        /* Signup */
+        /* ── SIGNUP LINK ── */
         .signup-link {
             text-align: center;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 26px;
+            font-size: 13px; color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .signup-link a {
-            color: #60a5fa;
+            color: var(--primary); font-weight: 600;
             text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
+            transition: color var(--transition-fast);
         }
 
-        .signup-link a:hover { color: #93bbfc; text-decoration: underline; }
+        .signup-link a:hover { color: var(--primary-dark); text-decoration: underline; }
 
-        /* Bottom bar */
+        /* ── BOTTOM BAR ── */
         .bottom-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 4;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 60px;
-            background: linear-gradient(0deg, rgba(2, 6, 23, 0.7), transparent);
+            bottom:0; left:0; right:0; z-index:4;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 60px;
+            background: linear-gradient(0deg, rgba(2,6,23,0.55), transparent);
         }
 
-        .bottom-bar .left-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.35);
+        .left-info {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: rgba(255,255,255,0.38); font-weight: 500;
         }
 
-        .bottom-bar .left-info .live-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
+        .live-dot {
+            width: 6px; height: 6px; border-radius: 50%;
             background: #34d399;
-            animation: pulse 2s ease-in-out infinite;
+            animation: dotPulse 2s ease-in-out infinite;
         }
 
-        .bottom-bar .right-links {
-            display: flex;
-            gap: 20px;
+        .right-links { display: flex; gap: 20px; }
+
+        .right-links a {
+            font-size: 12px; color: rgba(255,255,255,0.35);
+            text-decoration: none; font-weight: 500;
+            transition: color var(--transition-fast);
         }
 
-        .bottom-bar .right-links a {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.3);
-            text-decoration: none;
-            transition: color 0.2s;
+        .right-links a:hover { color: rgba(255,255,255,0.7); }
+
+        /* ── SHAKE ── */
+        @keyframes shake {
+            0%,100% { transform:translateX(0); }
+            20%,60%  { transform:translateX(-5px); }
+            40%,80%  { transform:translateX(5px); }
         }
+        .shake { animation: shake 0.35s ease; }
 
-        .bottom-bar .right-links a:hover { color: rgba(255, 255, 255, 0.6); }
-
-        /* ===== RESPONSIVE ===== */
+        /* ── RESPONSIVE ── */
         @media (max-width: 1050px) {
-            .main-container {
-                padding: 30px 40px;
-                gap: 40px;
-            }
+            .main-container { padding:30px 40px; gap:44px; }
             .hero-content h1 { font-size: 38px; }
             .features-grid { grid-template-columns: 1fr; }
             .login-card { width: 400px; }
@@ -746,179 +610,140 @@
 
         @media (max-width: 820px) {
             .branding-section { display: none; }
-
-            .main-container {
-                justify-content: center;
-                padding: 20px;
-            }
-
-            .login-card {
-                width: 100%;
-                max-width: 440px;
-            }
-
-            .bottom-bar {
-                padding: 12px 20px;
-                flex-direction: column;
-                gap: 6px;
-            }
+            .main-container { justify-content:center; padding:20px; }
+            .login-card { width:100%; max-width:440px; }
+            .bottom-bar { padding:12px 20px; flex-direction:column; gap:6px; }
         }
 
-        @media (max-width: 440px) {
-            .login-card {
-                padding: 32px 24px;
-                border-radius: 20px;
-            }
-
+        @media (max-width: 480px) {
+            .login-card { border-radius: var(--radius-xl); }
+            .card-topbar { padding:20px 22px 18px; }
+            .card-body { padding:22px 20px 20px; }
+            .options-row { flex-direction:column; align-items:flex-start; gap:12px; }
             .social-btns { flex-direction: column; }
-            .card-header h2 { font-size: 21px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== FULL SCREEN BACKGROUND ===== -->
+    <!-- BACKGROUND -->
     <div class="bg-fullscreen">
         <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-             alt="Office Background"
-             loading="eager">
+             alt="Office Background" loading="eager" id="bgImage"
+             onload="this.classList.add('loaded')"
+             onerror="this.style.display='none'">
     </div>
     <div class="bg-overlay"></div>
     <div class="bg-gradient-anim"></div>
 
-    <!-- ===== MAIN CONTENT ===== -->
+    <!-- MAIN -->
     <div class="main-container">
 
         <!-- LEFT BRANDING -->
         <div class="branding-section">
             <div class="brand-logo">
-                <div class="brand-logo-icon">
-                    <i class="fas fa-building"></i>
-                </div>
-                <div class="brand-logo-text"> <span>EMS</span></div>
+                <div class="brand-logo-icon"><i class="fas fa-building"></i></div>
+                <div class="brand-logo-text">EMS <span>Pro</span></div>
             </div>
 
             <div class="hero-content">
-                <div class="badge">
-                    <div class="dot"></div>
-                    Platform is live & secure
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Platform is live &amp; secure
                 </div>
                 <h1>Manage your<br>team with<br><span class="highlight">confidence.</span></h1>
                 <p>A complete employee management solution built for modern teams. Streamline HR operations from hire to retire.</p>
             </div>
 
             <div class="features-grid">
-                <div class="feature-card">
-                    <i class="fas fa-users"></i>
-                    <span>Employee Directory</span>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Smart Analytics</span>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Leave Management</span>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-shield-halved"></i>
-                    <span>Role-Based Access</span>
-                </div>
+                <div class="feature-card"><i class="fas fa-users"></i><span>Employee Directory</span></div>
+                <div class="feature-card"><i class="fas fa-chart-pie"></i><span>Smart Analytics</span></div>
+                <div class="feature-card"><i class="fas fa-calendar-check"></i><span>Leave Management</span></div>
+                <div class="feature-card"><i class="fas fa-shield-halved"></i><span>Role-Based Access</span></div>
             </div>
 
-            <div class="stats-strip">
-                <div class="stat">
-                    <div class="stat-number">12<span class="accent">K+</span></div>
-                    <div class="stat-label">Active Users</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">99.9<span class="accent">%</span></div>
-                    <div class="stat-label">Uptime</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">850<span class="accent">+</span></div>
-                    <div class="stat-label">Companies</div>
-                </div>
-            </div>
+ 
         </div>
 
         <!-- LOGIN CARD -->
         <div class="login-card">
-            <div class="card-content">
-                <div class="card-header">
-                    <div class="user-icon">
-                        <i class="fas fa-user"></i>
+
+            <!-- Card Topbar -->
+            <div class="card-topbar">
+                <div class="card-topbar-inner">
+                    <div class="card-icon"><i class="fas fa-user"></i></div>
+                    <div class="card-topbar-text">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to access your dashboard &nbsp;·&nbsp; EMS Pro</p>
                     </div>
-                    <h2>Welcome Back</h2>
-                    <p>Sign in to access your dashboard</p>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+
+                <!-- Alert -->
+                <div class="msg-alert" id="message" role="alert" aria-live="polite"></div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">
+                        <i class="fas fa-envelope"></i> Email Address <span class="req">*</span>
+                    </label>
+                    <p class="field-hint">Enter your registered email address</p>
+                    <div class="input-wrap" id="emailWrap">
+                        <i class="fas fa-envelope icon"></i>
+                        <input type="email" id="email" placeholder="you@company.com"
+                               autocomplete="email" spellcheck="false" maxlength="100" required>
+                    </div>
+                    <div class="field-err"><i class="fas fa-circle-exclamation"></i> <span id="emailErrText">Please enter a valid email address.</span></div>
                 </div>
 
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <div class="input-wrap" id="emailWrap">
-                            <i class="far fa-envelope field-icon"></i>
-                            <input type="email" id="email" placeholder="you@company.com" autocomplete="email" required>
-                        </div>
-                        <div class="error-text" id="emailErr">Please enter a valid email</div>
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label" for="password">
+                        <i class="fas fa-lock"></i> Password <span class="req">*</span>
+                    </label>
+                    <p class="field-hint">At least 6 characters</p>
+                    <div class="input-wrap has-toggle" id="passWrap">
+                        <i class="fas fa-lock icon"></i>
+                        <input type="password" id="password" placeholder="Enter your password"
+                               autocomplete="current-password" maxlength="128" required>
+                        <button type="button" class="pw-toggle" onclick="togglePass()" aria-label="Toggle password">
+                            <i class="far fa-eye" id="eyeIcon"></i>
+                        </button>
                     </div>
-
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-wrap" id="passWrap">
-                            <i class="fas fa-lock field-icon"></i>
-                            <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
-                            <button type="button" class="pass-toggle" onclick="togglePass()">
-                                <i class="far fa-eye" id="eyeIcon"></i>
-                            </button>
-                        </div>
-                        <div class="error-text" id="passErr">Password is required</div>
-                    </div>
-
-                    <div class="options-row">
-                        <div class="remember" onclick="toggleCheck()">
-                            <div class="chk-box" id="chk">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <span>Remember me</span>
-                        </div>
-                        <a href="#" class="forgot-link">Forgot password?</a>
-                    </div>
-
-                    <button type="submit" class="btn-login" id="loginBtn">
-                        <div class="btn-content">
-                            <div class="btn-spinner" id="spinner"></div>
-                            <span id="btnLabel">Sign In</span>
-                            <i class="fas fa-arrow-right" id="btnArrow" style="font-size: 13px;"></i>
-                        </div>
-                    </button>
-                </form>
-
-                <div class="msg-alert" id="message"></div>
-
-                <div class="divider"><span>or continue with</span></div>
-
-                <div class="social-btns">
-                    <button type="button" class="s-btn">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        Google
-                    </button>
-                    <button type="button" class="s-btn">
-                        <i class="fab fa-microsoft" style="color: #00a4ef;"></i>
-                        Microsoft
-                    </button>
+                    <div class="field-err"><i class="fas fa-circle-exclamation"></i> <span id="passErrText">Password is required.</span></div>
                 </div>
 
+                <!-- Options -->
+                <div class="options-row">
+                    <div class="remember" onclick="toggleCheck()" role="checkbox" aria-checked="false"
+                         id="rememberMe" tabindex="0"
+                         onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleCheck()}">
+                        <div class="chk-box" id="chk"><i class="fas fa-check"></i></div>
+                        <span>Remember me</span>
+                    </div>
+                    <a href="/forgot_password" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <!-- Submit -->
+                <button class="btn-login" id="loginBtn" onclick="handleLogin(event)">
+                    <div class="btn-spinner" id="spinner"></div>
+                    <i class="fas fa-arrow-right-to-bracket" id="btnIcon"></i>
+                    <span id="btnLabel">Sign In</span>
+                </button>
+
+          
+
+                <!-- Signup -->
                 <div class="signup-link">
                     Don't have an account? <a href="/register_superadmin">Create Account</a>
                 </div>
+
             </div>
         </div>
+
     </div>
 
     <!-- BOTTOM BAR -->
@@ -931,134 +756,153 @@
             <a href="#">Help</a>
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
-            <a href="#">© 2025 EMS</a>
+            <a href="#">© 2026 EMS Pro</a>
         </div>
     </div>
 
-<script>
-    // Toggle password
-    function togglePass() {
-        const input = document.getElementById('password');
-        const icon = document.getElementById('eyeIcon');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.className = 'far fa-eye-slash';
-        } else {
-            input.type = 'password';
-            icon.className = 'far fa-eye';
+    <script>
+        'use strict';
+
+        const $ = id => document.getElementById(id);
+        const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+
+        function setWrap(wrapId, state, errId, msg) {
+            const w = $(wrapId);
+            w.classList.remove('error','valid');
+            if (state === 'error') { w.classList.add('error'); if (errId && msg) $(errId).textContent = msg; }
+            else if (state === 'valid') w.classList.add('valid');
         }
-    }
 
-    // Toggle checkbox
-    function toggleCheck() {
-        document.getElementById('chk').classList.toggle('active');
-    }
-
-    // Clear errors on input
-    document.getElementById('email').addEventListener('input', function() {
-        document.getElementById('emailWrap').classList.remove('has-error');
-    });
-
-    document.getElementById('password').addEventListener('input', function() {
-        document.getElementById('passWrap').classList.remove('has-error');
-    });
-
-    // Validate email
-    function validEmail(e) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-    }
-
-    // Shake
-    function shake(el) {
-        el.style.animation = 'none';
-        el.offsetHeight;
-        el.style.animation = 'shakeAnim 0.4s ease';
-    }
-
-    const s = document.createElement('style');
-    s.textContent = `
-        @keyframes shakeAnim {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
+        function togglePass() {
+            const inp = $('password'), ico = $('eyeIcon');
+            inp.type === 'password' ? (inp.type='text', ico.className='far fa-eye-slash') : (inp.type='password', ico.className='far fa-eye');
         }
-    `;
-    document.head.appendChild(s);
 
-    // Login
-    async function handleLogin(e) {
-        e.preventDefault();
+        function toggleCheck() {
+            const chk = $('chk'), el = $('rememberMe');
+            chk.classList.toggle('active');
+            el.setAttribute('aria-checked', chk.classList.contains('active').toString());
+        }
 
-        const btn = document.getElementById('loginBtn');
-        const spinner = document.getElementById('spinner');
-        const label = document.getElementById('btnLabel');
-        const arrow = document.getElementById('btnArrow');
-        const msg = document.getElementById('message');
-        const emailWrap = document.getElementById('emailWrap');
-        const passWrap = document.getElementById('passWrap');
+        // Real-time
+        $('email').addEventListener('input', function() {
+            const v = this.value.trim();
+            if (!v) $('emailWrap').classList.remove('error','valid');
+            else if (!validEmail(v)) setWrap('emailWrap','error','emailErrText','Enter a valid email (e.g. you@company.com).');
+            else setWrap('emailWrap','valid');
+        });
 
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
+        $('password').addEventListener('input', function() {
+            const v = this.value;
+            if (!v) $('passWrap').classList.remove('error','valid');
+            else if (v.length < 6) setWrap('passWrap','error','passErrText','Password must be at least 6 characters.');
+            else setWrap('passWrap','valid');
+        });
 
-        // Reset
-        msg.className = 'msg-alert';
-        msg.style.display = 'none';
-        emailWrap.classList.remove('has-error');
-        passWrap.classList.remove('has-error');
-
-        // Validate
-        let err = false;
-        if (!email || !validEmail(email)) { emailWrap.classList.add('has-error'); err = true; }
-        if (!password) { passWrap.classList.add('has-error'); err = true; }
-        if (err) { shake(btn); return; }
-
-        // Loading
-        btn.disabled = true;
-        spinner.style.display = 'block';
-        arrow.style.display = 'none';
-        label.textContent = 'Signing in...';
-
-        try {
-            const res = await fetch("/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+        ['email','password'].forEach(id => {
+            $(id).addEventListener('focus', () => {
+                const map = { email:'emailWrap', password:'passWrap' };
+                $(map[id]).classList.remove('error','valid');
             });
+        });
 
-            const data = await res.json();
+        function showMsg(type, icon, title, detail) {
+            const el = $('message');
+            el.className = `msg-alert ${type}`;
+            el.innerHTML = `<i class="fas ${icon}"></i><div class="msg-alert-body"><div class="msg-title">${title}</div><div class="msg-detail">${detail}</div></div>`;
+        }
 
-            if (data.status === "success") {
-                spinner.style.display = 'none';
-                label.textContent = 'Welcome!';
-                btn.style.background = '#10b981';
-                btn.style.boxShadow = '0 4px 14px rgba(16,185,129,0.35)';
-                showMsg('success', 'fa-circle-check', 'Login successful! Redirecting...');
-                setTimeout(() => window.location.href = "/dashboard", 1200);
-            } else {
-                showMsg('error', 'fa-circle-exclamation', data.message || 'Invalid credentials. Please try again.');
+        async function handleLogin(e) {
+            e.preventDefault();
+            $('message').className = 'msg-alert';
+            $('emailWrap').classList.remove('error','valid');
+            $('passWrap').classList.remove('error','valid');
+
+            const email    = $('email').value.trim();
+            const password = $('password').value;
+            let hasErr = false;
+
+            if (!email) { setWrap('emailWrap','error','emailErrText','Email address is required.'); hasErr = true; }
+            else if (!validEmail(email)) { setWrap('emailWrap','error','emailErrText','Enter a valid email (e.g. you@company.com).'); hasErr = true; }
+
+            if (!password) { setWrap('passWrap','error','passErrText','Password is required.'); hasErr = true; }
+            else if (password.length < 6) { setWrap('passWrap','error','passErrText','Password must be at least 6 characters.'); hasErr = true; }
+
+            if (hasErr) {
+                const btn = $('loginBtn');
+                btn.classList.add('shake');
+                setTimeout(() => btn.classList.remove('shake'), 400);
+                showMsg('error','fa-triangle-exclamation','Validation Error','Please fix the highlighted fields before signing in.');
+                return;
+            }
+
+            const btn = $('loginBtn');
+            $('spinner').style.display = 'block';
+            $('btnIcon').style.display = 'none';
+            $('btnLabel').textContent = 'Signing in…';
+            btn.disabled = true;
+
+            try {
+                const res  = await fetch('/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user_data', JSON.stringify(data.user_data));
+
+                    btn.classList.add('btn-success');
+                    $('spinner').style.display = 'none';
+                    $('btnIcon').style.display = 'inline';
+                    $('btnIcon').className = 'fas fa-check';
+                    $('btnLabel').textContent = 'Welcome!';
+                    setWrap('emailWrap','valid');
+                    setWrap('passWrap','valid');
+                    showMsg('success','fa-circle-check','Login Successful','Redirecting you to your dashboard…');
+
+                    setTimeout(() => {
+                        const role = (data.user_data?.role || '').toLowerCase();
+                        if      (role === 'admin')   window.location.href = '/admindashboard';
+                        else if (role === 'emp')     window.location.href = '/empdashboard';
+                        else if (role === 'manager') window.location.href = '/managerdashboard';
+                        else                         window.location.href = '/dashboard';
+                    }, 1200);
+
+                } else {
+                    const msg = data.message || '';
+                    if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('user') || msg.toLowerCase().includes('not found')) {
+                        setWrap('emailWrap','error','emailErrText','No account found with this email.');
+                        showMsg('error','fa-circle-exclamation','Login Failed','No account found with that email address.');
+                    } else if (msg.toLowerCase().includes('password') || msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('wrong')) {
+                        setWrap('passWrap','error','passErrText','Incorrect password — please try again.');
+                        showMsg('error','fa-circle-exclamation','Login Failed','Incorrect password. Please try again.');
+                    } else {
+                        setWrap('emailWrap','error'); setWrap('passWrap','error');
+                        showMsg('error','fa-circle-exclamation','Login Failed', msg || 'Invalid credentials. Please try again.');
+                    }
+                    resetBtn();
+                }
+            } catch {
+                showMsg('error','fa-triangle-exclamation','Connection Error','Could not reach the server. Check your connection and try again.');
                 resetBtn();
             }
-        } catch (err) {
-            showMsg('error', 'fa-triangle-exclamation', 'Connection failed. Please try again.');
-            resetBtn();
+
+            function resetBtn() {
+                btn.disabled = false;
+                btn.classList.remove('btn-success','shake');
+                $('spinner').style.display = 'none';
+                $('btnIcon').style.display = 'inline';
+                $('btnIcon').className = 'fas fa-arrow-right-to-bracket';
+                $('btnLabel').textContent = 'Sign In';
+                btn.classList.add('shake');
+                setTimeout(() => btn.classList.remove('shake'), 400);
+            }
         }
 
-        function showMsg(type, icon, text) {
-            msg.className = `msg-alert ${type}`;
-            msg.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
-        }
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleLogin(e);
+        });
 
-        function resetBtn() {
-            btn.disabled = false;
-            spinner.style.display = 'none';
-            arrow.style.display = 'inline';
-            label.textContent = 'Sign In';
-            btn.style.background = '';
-            btn.style.boxShadow = '';
-            shake(btn);
-        }
-    }
-</script>
-
+        window.addEventListener('load', () => setTimeout(() => $('email').focus(), 350));
+    </script>
 </body>
 </html>
