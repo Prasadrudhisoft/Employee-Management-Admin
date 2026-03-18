@@ -3,8 +3,11 @@ from connector import get_connection
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
+from flask import send_from_directory
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = 'static/profile_imgs'
 
 @app.route('/register_superadmin')
 def register_superadmin():
@@ -25,6 +28,10 @@ def admin_status():
 @app.route('/forgot_password')
 def forgot_password():
     return render_template('change_password.html')
+
+@app.route('/static/profile_imgs/<filename>')
+def serve_profile_img(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 
@@ -326,6 +333,42 @@ def forgot_pass():
             'status':'error',
             'message':str(e)
         })
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/my_profile', methods=['GET'])
+def my_profile():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        user_id = request.headers.get('user_id')  # Replace with JWT later
+
+        cursor.execute("""
+            SELECT id, name, email, role, profile_img
+            FROM users
+            WHERE id = %s AND role = 'Super_Admin'
+        """, (user_id,))
+
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
+
+        # Build image URL
+        if user.get('profile_img'):
+            user['profile_img_url'] = request.host_url + user['profile_img']
+        else:
+            user['profile_img_url'] = None
+
+        user.pop('profile_img', None)
+
+        return jsonify({'status': 'success', 'data': user}), 200
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
     finally:
         cursor.close()
         conn.close()
