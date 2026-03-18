@@ -22,6 +22,10 @@ def superadmin_dashboard():
 def admin_status():
     return render_template('Admin_status.html')
 
+@app.route('/forgot_password')
+def forgot_password():
+    return render_template('change_password.html')
+
 
 
 import os
@@ -231,7 +235,7 @@ def get_emp():
             'message':str(e)
         })
     
-# ── Add this route to your manager_bp in manager.py ──
+
 
 @app.route('/toggle_emp_status', methods=['POST'])
 def toggle_emp_status():
@@ -283,6 +287,48 @@ def toggle_emp_status():
         cursor.close()
         conn.close()
         
+@app.route('/forgot_pass',methods=['POST'])
+def forgot_pass():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        data = request.json
+        email = data.get('email')
+        new_pass = data.get('new_pass')
+        old_pass = data.get('old_pass')
+
+        new_pass1 = generate_password_hash(new_pass)
+
+        cursor.execute("select * from users where email=%s",(email,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({
+                'status':'fail',
+                'message':'Invalid Email Or Old Password'
+            })
+
+        if not check_password_hash(user['Password'], old_pass):
+            return jsonify({
+                'status':'fail',
+                'message':'Invalid Password'
+            })
+        
+        cursor.execute("update users set password = %s where email = %s",(new_pass1,email))
+        conn.commit()
+        return jsonify({
+                'status':'success',
+                'message':'password Updated Succssfully.'
+            })
+
+
+    except Exception as e:
+        return jsonify({
+            'status':'error',
+            'message':str(e)
+        })
+    finally:
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
