@@ -33,6 +33,9 @@ def forgot_password():
 def serve_profile_img(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
+@app.route('/enquiry')
+def enquiry():
+    return render_template('enquiry.html')
 
 
 import os
@@ -344,6 +347,7 @@ def my_profile():
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         user_id = request.headers.get('user_id')  # Replace with JWT later
+        print(user_id)
 
         cursor.execute("""
             SELECT id, name, email, role, profile_img
@@ -372,6 +376,85 @@ def my_profile():
     finally:
         cursor.close()
         conn.close()
+
+
+@app.route('/get_enquiry', methods=['GET'])
+def get_enquiry():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        cursor.execute("select * from contacts")
+        enquiry = cursor.fetchall()
+        read = []
+        unread = []
+
+        for i in enquiry:
+            if i.get('is_read') == 0:
+                unread.append(i)
+            else:
+                read.append(i)
+
+        return jsonify({
+            'status':'success',
+            'message': 'Enquiries fetched successfully',
+            'read': read,
+            'unread': unread
+        })
+    
+
+    except Exception as e:
+        return jsonify({
+            'status':'error',
+            'message':str(e)
+        })
+    
+@app.route('/mark_enquiry_read', methods=['POST'])
+def mark_enquiry_read():
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        data = request.get_json()
+        enquiry_id = data.get('id')
+
+        if not enquiry_id:
+            return jsonify({
+                'status': 'error',
+                'message': 'Enquiry ID is required'
+            }), 400
+
+        cursor.execute(
+            "UPDATE contacts SET is_read = 1 WHERE id = %s",
+            (enquiry_id,)
+        )
+
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({
+                'status': 'error',
+                'message': 'Enquiry not found'
+            }), 404
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Enquiry marked as read'
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()    
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

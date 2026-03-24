@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enquiry Management</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h2 { margin-top: 30px; }
+        .card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .unread { background-color: #fff3cd; }
+        .read { background-color: #d4edda; }
+        button {
+            padding: 5px 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Enquiry Dashboard</h1>
+
+<h2>Unread Enquiries</h2>
+<div id="unreadList"></div>
+
+<h2>Read Enquiries</h2>
+<div id="readList"></div>
+
+<script>
+function getEnquiries() {
+    fetch('/get_enquiry')
+    .then(res => res.json())
+    .then(data => {
+        const unreadDiv = document.getElementById('unreadList');
+        const readDiv = document.getElementById('readList');
+
+        unreadDiv.innerHTML = '';
+        readDiv.innerHTML = '';
+
+        // Unread
+        data.unread.forEach(item => {
+            unreadDiv.innerHTML += `
+                <div class="card unread">
+                    <b>${item.name}</b> (${item.email})<br>
+                    <b>Subject:</b> ${item.subject}<br>
+                    <b>Message:</b> ${item.message}<br>
+                    <button onclick="markAsRead('${item.id}')">Mark as Read</button>
+                </div>
+            `;
+        });
+
+        // Read
+        data.read.forEach(item => {
+            readDiv.innerHTML += `
+                <div class="card read">
+                    <b>${item.name}</b> (${item.email})<br>
+                    <b>Subject:</b> ${item.subject}<br>
+                    <b>Message:</b> ${item.message}
+                </div>
+            `;
+        });
+    });
+}
+
+function markAsRead(id) {
+    fetch('/mark_enquiry_read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        getEnquiries(); // refresh list
+    });
+}
+
+// Load on page start
+getEnquiries();
+</script>
+
+</body>
+</html>
