@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Admin Registration | EMS Pro</title>
+    <title>Super Admin Registration | StaffCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -497,7 +497,7 @@
         <div class="topbar-left">
             <div class="topbar-info" style="text-align:right">
                 <h1>Super Admin Registration</h1>
-                <span>EMS Pro &nbsp;·&nbsp; Account Setup</span>
+                <span>StaffCore &nbsp;·&nbsp; Account Setup</span>
             </div>
             <div class="topbar-icon">
                 <i class="fas fa-user-shield"></i>
@@ -791,7 +791,7 @@
                 if (data.status === 'success') {
                     document.getElementById('formCard').style.display    = 'none';
                     document.getElementById('successCard').style.display = 'block';
-                    document.getElementById('successMsg').textContent    = `Welcome, ${fd.get('name')}! Your Super Admin account is ready. You can now sign in to EMS Pro.`;
+                    document.getElementById('successMsg').textContent    = `Welcome, ${fd.get('name')}! Your Super Admin account is ready. You can now sign in to StaffCore.`;
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
                     showAlert(data.message || 'An unexpected error occurred.', 'error');

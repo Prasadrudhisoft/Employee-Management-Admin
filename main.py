@@ -21,6 +21,11 @@ def login_superadmin():
 def superadmin_dashboard():
     return render_template('dashboard.html')
 
+@app.route('/addadmin')
+def add_admin():
+    return render_template('add_admin.html')
+
+
 @app.route('/admin_status')
 def admin_status():
     return render_template('Admin_status.html')

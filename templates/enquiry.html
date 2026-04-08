@@ -1,89 +1,775 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Enquiry Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Enquiry Management | StaffCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body { font-family: Arial; margin: 20px; }
-        h2 { margin-top: 30px; }
-        .card {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #6366f1;
+            --primary-lighter: #e0e7ff;
+            --primary-subtle: #eef2ff;
+            --primary-glow: rgba(79, 70, 229, 0.15);
+            --success: #059669;
+            --success-light: #ecfdf5;
+            --success-border: #a7f3d0;
+            --warning: #d97706;
+            --warning-light: #fffbeb;
+            --warning-border: #fde68a;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --danger-border: #fecaca;
+            --info: #0284c7;
+            --info-light: #f0f9ff;
+            --bg-body: #f5f6fa;
+            --bg-white: #ffffff;
+            --bg-muted: #f1f5f9;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-tertiary: #64748b;
+            --text-muted: #94a3b8;
+            --text-placeholder: #cbd5e1;
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 20px;
+            --radius-full: 9999px;
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .unread { background-color: #fff3cd; }
-        .read { background-color: #d4edda; }
-        button {
-            padding: 5px 10px;
-            margin-top: 5px;
-            cursor: pointer;
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.6); }
+
+        /* ========== TOPBAR ========== */
+        .topbar {
+            position: sticky; top: 0; height: 68px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 0 32px; z-index: 50;
+        }
+
+        .topbar-left { display: flex; align-items: center; gap: 13px; }
+
+        .topbar-icon {
+            width: 40px; height: 40px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 16px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            flex-shrink: 0;
+        }
+
+        .topbar-info h1 {
+            font-size: 17px; font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em; line-height: 1.2;
+        }
+
+        .topbar-info span { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 20px;
+            background: var(--bg-white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-full);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none; cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .btn-back i { font-size: 11px; transition: transform var(--transition-fast); }
+        .btn-back:hover { background: var(--primary-subtle); border-color: var(--primary-lighter); color: var(--primary); }
+        .btn-back:hover i { transform: translateX(-3px); }
+
+        /* ========== PAGE BODY ========== */
+        .page-body { padding: 28px 32px; max-width: 1000px; margin: 0 auto; }
+
+        /* ========== BANNER ========== */
+        .page-banner {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 45%, #818cf8 100%);
+            border-radius: var(--radius-2xl);
+            padding: 30px 38px; margin-bottom: 24px;
+            color: white; position: relative; overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute; top: -60%; right: -8%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.09) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .page-banner .decor-ring {
+            position: absolute; bottom: -25px; right: 160px;
+            width: 100px; height: 100px;
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 50%; pointer-events: none;
+        }
+
+        .banner-inner {
+            position: relative; z-index: 1;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 20px;
+        }
+
+        .banner-text h2 { font-size: 22px; font-weight: 700; margin-bottom: 7px; letter-spacing: -0.02em; }
+        .banner-text p  { font-size: 13.5px; opacity: 0.78; max-width: 460px; line-height: 1.7; }
+
+        .banner-icon {
+            width: 68px; height: 68px;
+            border-radius: var(--radius-xl);
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.22);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; flex-shrink: 0;
+        }
+
+        /* ========== STATS ROW ========== */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 14px; margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 16px 20px;
+            display: flex; align-items: center; gap: 14px;
+            transition: all var(--transition-fast);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-lighter);
+            box-shadow: 0 4px 16px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 44px; height: 44px;
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+
+        .stat-icon.indigo  { background: var(--primary-subtle); color: var(--primary); }
+        .stat-icon.amber   { background: var(--warning-light);  color: var(--warning); }
+        .stat-icon.emerald { background: var(--success-light);  color: var(--success); }
+
+        .stat-info p { font-size: 11.5px; color: var(--text-muted); font-weight: 500; margin-bottom: 2px; }
+        .stat-info h4 { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.03em; }
+
+        /* ========== FILTER / TOOLBAR ========== */
+        .toolbar {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 20px; flex-wrap: wrap;
+        }
+
+        .search-wrap {
+            position: relative; flex: 1; min-width: 200px;
+        }
+
+        .search-wrap i {
+            position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+            font-size: 13px; color: var(--text-muted); pointer-events: none;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 9px 14px 9px 38px;
+            background: var(--bg-white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-full);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; color: var(--text-primary);
+            outline: none; transition: all var(--transition-base);
+        }
+
+        .search-wrap input::placeholder { color: var(--text-placeholder); }
+
+        .search-wrap input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .filter-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 16px;
+            border-radius: var(--radius-full);
+            font-family: 'Inter', sans-serif;
+            font-size: 12.5px; font-weight: 600;
+            cursor: pointer; transition: all var(--transition-fast);
+            border: 1.5px solid var(--border);
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active { background: var(--primary-subtle); border-color: var(--primary-lighter); color: var(--primary); }
+
+        .filter-btn .dot {
+            width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        .dot-all    { background: var(--text-muted); }
+        .dot-unread { background: var(--warning); }
+        .dot-read   { background: var(--success); }
+
+        .btn-refresh {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 16px;
+            background: var(--primary);
+            border: none; border-radius: var(--radius-full);
+            font-family: 'Inter', sans-serif;
+            font-size: 12.5px; font-weight: 600;
+            color: white; cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 14px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-refresh i { transition: transform .4s ease; }
+        .btn-refresh:hover i { transform: rotate(180deg); }
+
+        /* ========== MAIN CARD ========== */
+        .form-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-2xl);
+            overflow: hidden; margin-bottom: 20px;
+        }
+
+        /* ========== SECTION BLOCK ========== */
+        .section-block { padding: 26px 30px; border-bottom: 1px solid var(--border-light); }
+        .section-block:last-child { border-bottom: none; }
+
+        .section-heading {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .section-heading-left { display: flex; align-items: center; gap: 13px; }
+
+        .section-icon {
+            width: 42px; height: 42px;
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px; flex-shrink: 0;
+        }
+
+        .section-icon.amber   { background: var(--warning-light); color: var(--warning); }
+        .section-icon.emerald { background: var(--success-light); color: var(--success); }
+
+        .section-title h3 { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+        .section-title p  { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+
+        .section-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 11px;
+            border-radius: var(--radius-full);
+            font-size: 12px; font-weight: 700;
+        }
+
+        .section-badge.amber   { background: var(--warning-light);  color: var(--warning); border: 1px solid var(--warning-border); }
+        .section-badge.emerald { background: var(--success-light);  color: var(--success); border: 1px solid var(--success-border); }
+
+        /* ========== ENQUIRY CARDS ========== */
+        .enquiry-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .enquiry-card {
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 18px 20px;
+            transition: all var(--transition-base);
+            position: relative; overflow: hidden;
+        }
+
+        .enquiry-card::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .enquiry-card.unread { background: #fffdf5; border-color: var(--warning-border); }
+        .enquiry-card.unread::before { background: var(--warning); }
+        .enquiry-card.unread:hover { box-shadow: 0 4px 20px rgba(217,119,6,0.12); transform: translateY(-1px); }
+
+        .enquiry-card.read { background: #f9fffe; border-color: var(--success-border); }
+        .enquiry-card.read::before { background: var(--success); }
+        .enquiry-card.read:hover { box-shadow: 0 4px 20px rgba(5,150,105,0.1); transform: translateY(-1px); }
+
+        .enquiry-header {
+            display: flex; align-items: flex-start;
+            justify-content: space-between; gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .enquiry-sender { display: flex; align-items: center; gap: 11px; }
+
+        .sender-avatar {
+            width: 40px; height: 40px; border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 700; color: white; flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .avatar-unread { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .avatar-read   { background: linear-gradient(135deg, #059669, #34d399); }
+
+        .sender-info h5 { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+        .sender-info span {
+            font-size: 12px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        .enquiry-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: var(--radius-full);
+            font-size: 11.5px; font-weight: 700;
+        }
+
+        .status-badge.unread { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning-border); }
+        .status-badge.read   { background: var(--success-light); color: var(--success); border: 1px solid var(--success-border); }
+        .status-badge i { font-size: 9px; }
+
+        .enquiry-subject {
+            font-size: 13px; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 8px;
+            display: flex; align-items: center; gap: 7px;
+        }
+
+        .enquiry-subject i { font-size: 12px; color: var(--primary); }
+
+        .enquiry-message {
+            font-size: 13px; color: var(--text-tertiary); line-height: 1.65;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.7);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+        }
+
+        .enquiry-footer {
+            display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; gap: 8px;
+        }
+
+        .enquiry-time {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 11.5px; color: var(--text-muted);
+        }
+
+        .btn-mark-read {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px;
+            background: var(--warning-light);
+            border: 1.5px solid var(--warning-border);
+            border-radius: var(--radius-full);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px; font-weight: 600;
+            color: var(--warning); cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-mark-read:hover {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: white;
+            box-shadow: 0 4px 12px rgba(217,119,6,0.25);
+            transform: translateY(-1px);
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 36px 20px;
+        }
+
+        .empty-icon {
+            width: 60px; height: 60px;
+            border-radius: var(--radius-xl);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 14px;
+        }
+
+        .empty-icon.amber   { background: var(--warning-light); color: var(--warning); }
+        .empty-icon.emerald { background: var(--success-light); color: var(--success); }
+
+        .empty-state h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 5px; }
+        .empty-state p  { font-size: 12.5px; color: var(--text-muted); }
+
+        /* ========== LOADING ========== */
+        .loading-overlay {
+            text-align: center; padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--primary-lighter);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-overlay p { font-size: 13px; color: var(--text-muted); }
+
+        /* ========== ALERT ========== */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 13px 18px;
+            border-radius: var(--radius-lg);
+            font-size: 13px; font-weight: 600;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 999;
+            animation: toastIn .3s ease;
+            max-width: 340px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+        }
+
+        @keyframes toastIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+        @keyframes toastOut { from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(10px);} }
+
+        .toast.success { background: var(--success-light); border: 1px solid var(--success-border); color: var(--success); }
+        .toast.error   { background: var(--danger-light);  border: 1px solid var(--danger-border);  color: var(--danger); }
+        .toast i { font-size: 16px; flex-shrink: 0; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .topbar { padding: 0 16px; }
+            .topbar-info span { display: none; }
+            .page-body { padding: 16px; }
+            .page-banner { padding: 20px 18px; }
+            .banner-icon { display: none; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .section-block { padding: 18px 16px; }
+            .enquiry-header { flex-direction: column; gap: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .topbar { height: 60px; }
+            .btn-back-label { display: none; }
+            .stats-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<h1>Enquiry Dashboard</h1>
+    <!-- ========== TOPBAR ========== -->
+    <header class="topbar">
+        <a href="/dashboard" class="btn-back">
+            <i class="fas fa-arrow-left"></i>
+            <span class="btn-back-label">Back to Dashboard</span>
+        </a>
+        <div class="topbar-left">
+            <div class="topbar-info" style="text-align:right">
+                <h1>Enquiry Management</h1>
+                <span>StaffCore &nbsp;·&nbsp; Communications</span>
+            </div>
+            <div class="topbar-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+        </div>
+    </header>
 
-<h2>Unread Enquiries</h2>
-<div id="unreadList"></div>
+    <!-- ========== PAGE BODY ========== -->
+    <div class="page-body">
 
-<h2>Read Enquiries</h2>
-<div id="readList"></div>
-
-<script>
-function getEnquiries() {
-    fetch('/get_enquiry')
-    .then(res => res.json())
-    .then(data => {
-        const unreadDiv = document.getElementById('unreadList');
-        const readDiv = document.getElementById('readList');
-
-        unreadDiv.innerHTML = '';
-        readDiv.innerHTML = '';
-
-        // Unread
-        data.unread.forEach(item => {
-            unreadDiv.innerHTML += `
-                <div class="card unread">
-                    <b>${item.name}</b> (${item.email})<br>
-                    <b>Subject:</b> ${item.subject}<br>
-                    <b>Message:</b> ${item.message}<br>
-                    <button onclick="markAsRead('${item.id}')">Mark as Read</button>
+        <!-- Banner -->
+        <div class="page-banner">
+            <div class="decor-ring"></div>
+            <div class="banner-inner">
+                <div class="banner-text">
+                    <h2>Enquiry Dashboard</h2>
+                    <p>View and manage all incoming enquiries from your users. Mark messages as read, track response status, and stay on top of every conversation.</p>
                 </div>
-            `;
-        });
-
-        // Read
-        data.read.forEach(item => {
-            readDiv.innerHTML += `
-                <div class="card read">
-                    <b>${item.name}</b> (${item.email})<br>
-                    <b>Subject:</b> ${item.subject}<br>
-                    <b>Message:</b> ${item.message}
+                <div class="banner-icon">
+                    <i class="fas fa-envelope-open-text"></i>
                 </div>
-            `;
-        });
-    });
-}
+            </div>
+        </div>
 
-function markAsRead(id) {
-    fetch('/mark_enquiry_read', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: id })
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        getEnquiries(); // refresh list
-    });
-}
+        <!-- Stats Row -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+                <div class="stat-icon indigo"><i class="fas fa-envelope"></i></div>
+                <div class="stat-info"><p>Total Enquiries</p><h4 id="statTotal">—</h4></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fas fa-envelope-open"></i></div>
+                <div class="stat-info"><p>Unread</p><h4 id="statUnread">—</h4></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon emerald"><i class="fas fa-check-double"></i></div>
+                <div class="stat-info"><p>Read</p><h4 id="statRead">—</h4></div>
+            </div>
+        </div>
 
-// Load on page start
-getEnquiries();
-</script>
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by name, email, subject…" oninput="filterEnquiries()">
+            </div>
+            <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">
+                <span class="dot dot-all"></span> All
+            </button>
+            <button class="filter-btn" id="filterUnread" onclick="setFilter('unread')">
+                <span class="dot dot-unread"></span> Unread
+            </button>
+            <button class="filter-btn" id="filterRead" onclick="setFilter('read')">
+                <span class="dot dot-read"></span> Read
+            </button>
+            <button class="btn-refresh" onclick="loadEnquiries()">
+                <i class="fas fa-rotate-right"></i> Refresh
+            </button>
+        </div>
 
+        <!-- Main Card -->
+        <div class="form-card">
+
+            <!-- Unread Section -->
+            <div class="section-block" id="unreadSection">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon amber"><i class="fas fa-envelope"></i></div>
+                        <div class="section-title">
+                            <h3>Unread Enquiries</h3>
+                            <p>Pending messages that need your attention</p>
+                        </div>
+                    </div>
+                    <span class="section-badge amber" id="unreadBadge"><i class="fas fa-circle" style="font-size:7px"></i> <span id="unreadCount">0</span></span>
+                </div>
+                <div class="enquiry-list" id="unreadList">
+                    <div class="loading-overlay"><div class="spinner"></div><p>Loading enquiries…</p></div>
+                </div>
+            </div>
+
+            <!-- Read Section -->
+            <div class="section-block" id="readSection">
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <div class="section-icon emerald"><i class="fas fa-envelope-open"></i></div>
+                        <div class="section-title">
+                            <h3>Read Enquiries</h3>
+                            <p>Previously reviewed messages</p>
+                        </div>
+                    </div>
+                    <span class="section-badge emerald" id="readBadge"><i class="fas fa-circle" style="font-size:7px"></i> <span id="readCount">0</span></span>
+                </div>
+                <div class="enquiry-list" id="readList">
+                    <div class="loading-overlay"><div class="spinner"></div><p>Loading enquiries…</p></div>
+                </div>
+            </div>
+
+        </div><!-- /form-card -->
+
+    </div><!-- /page-body -->
+
+    <!-- Toast -->
+    <div id="toast" style="display:none"></div>
+
+    <script>
+        'use strict';
+
+        let allData = { unread: [], read: [] };
+        let activeFilter = 'all';
+
+        /* ── LOAD ── */
+        async function loadEnquiries() {
+            document.getElementById('unreadList').innerHTML = '<div class="loading-overlay"><div class="spinner"></div><p>Loading enquiries…</p></div>';
+            document.getElementById('readList').innerHTML   = '<div class="loading-overlay"><div class="spinner"></div><p>Loading enquiries…</p></div>';
+            try {
+                const res  = await fetch('/get_enquiry');
+                const data = await res.json();
+                allData = data;
+                updateStats();
+                renderEnquiries();
+            } catch {
+                document.getElementById('unreadList').innerHTML = '<div class="empty-state"><div class="empty-icon amber"><i class="fas fa-wifi-slash"></i></div><h4>Connection Error</h4><p>Could not reach server. Check your connection.</p></div>';
+                document.getElementById('readList').innerHTML   = '';
+            }
+        }
+
+        /* ── STATS ── */
+        function updateStats() {
+            const total = allData.unread.length + allData.read.length;
+            document.getElementById('statTotal').textContent  = total;
+            document.getElementById('statUnread').textContent = allData.unread.length;
+            document.getElementById('statRead').textContent   = allData.read.length;
+            document.getElementById('unreadCount').textContent = allData.unread.length;
+            document.getElementById('readCount').textContent   = allData.read.length;
+        }
+
+        /* ── FILTER ── */
+        function setFilter(f) {
+            activeFilter = f;
+            ['All','Unread','Read'].forEach(x => document.getElementById('filter'+x).classList.remove('active'));
+            document.getElementById('filter' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
+            renderEnquiries();
+        }
+
+        function filterEnquiries() { renderEnquiries(); }
+
+        function applySearch(list) {
+            const q = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!q) return list;
+            return list.filter(i =>
+                (i.name    || '').toLowerCase().includes(q) ||
+                (i.email   || '').toLowerCase().includes(q) ||
+                (i.subject || '').toLowerCase().includes(q) ||
+                (i.message || '').toLowerCase().includes(q)
+            );
+        }
+
+        /* ── RENDER ── */
+        function renderEnquiries() {
+            const unreadSec = document.getElementById('unreadSection');
+            const readSec   = document.getElementById('readSection');
+
+            unreadSec.style.display = (activeFilter === 'read')   ? 'none' : '';
+            readSec.style.display   = (activeFilter === 'unread') ? 'none' : '';
+
+            const unreadFiltered = applySearch(allData.unread);
+            const readFiltered   = applySearch(allData.read);
+
+            document.getElementById('unreadList').innerHTML = renderList(unreadFiltered, 'unread');
+            document.getElementById('readList').innerHTML   = renderList(readFiltered,   'read');
+        }
+
+        function getInitial(name) {
+            return (name || '?').trim().charAt(0).toUpperCase();
+        }
+
+        function renderList(items, type) {
+            if (!items.length) {
+                const icons  = { unread: 'fa-envelope', read: 'fa-envelope-open' };
+                const msgs   = { unread: 'No unread enquiries right now.', read: 'No read enquiries yet.' };
+                const colors = { unread: 'amber', read: 'emerald' };
+                return `<div class="empty-state">
+                    <div class="empty-icon ${colors[type]}"><i class="fas ${icons[type]}"></i></div>
+                    <h4>${type === 'unread' ? 'All caught up!' : 'Nothing here yet'}</h4>
+                    <p>${msgs[type]}</p>
+                </div>`;
+            }
+
+            return items.map(item => {
+                const initial = getInitial(item.name);
+                const avatarClass = type === 'unread' ? 'avatar-unread' : 'avatar-read';
+                const markBtn = type === 'unread'
+                    ? `<button class="btn-mark-read" onclick="markAsRead('${item.id}')">
+                           <i class="fas fa-check"></i> Mark as Read
+                       </button>`
+                    : `<span class="enquiry-time"><i class="fas fa-check-double" style="color:var(--success)"></i> Read</span>`;
+
+                return `<div class="enquiry-card ${type}" id="card-${item.id}">
+                    <div class="enquiry-header">
+                        <div class="enquiry-sender">
+                            <div class="sender-avatar ${avatarClass}">${initial}</div>
+                            <div class="sender-info">
+                                <h5>${escHtml(item.name || 'Unknown')}</h5>
+                                <span><i class="fas fa-at" style="font-size:10px"></i> ${escHtml(item.email || '')}</span>
+                            </div>
+                        </div>
+                        <div class="enquiry-meta">
+                            <span class="status-badge ${type}">
+                                <i class="fas fa-${type === 'unread' ? 'circle' : 'check-circle'}"></i>
+                                ${type === 'unread' ? 'Unread' : 'Read'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="enquiry-subject"><i class="fas fa-tag"></i> ${escHtml(item.subject || 'No Subject')}</div>
+                    <div class="enquiry-message">${escHtml(item.message || '')}</div>
+                    <div class="enquiry-footer">
+                        <span class="enquiry-time"><i class="fas fa-clock"></i> ${item.created_at || 'Just now'}</span>
+                        ${markBtn}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        /* ── MARK READ ── */
+        async function markAsRead(id) {
+            const btn = document.querySelector(`#card-${id} .btn-mark-read`);
+            if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…'; btn.disabled = true; }
+            try {
+                const res  = await fetch('/mark_enquiry_read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                showToast(data.message || 'Marked as read!', 'success');
+                await loadEnquiries();
+            } catch {
+                showToast('Could not update. Try again.', 'error');
+                if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> Mark as Read'; btn.disabled = false; }
+            }
+        }
+
+        /* ── TOAST ── */
+        function showToast(msg, type) {
+            const el = document.getElementById('toast');
+            el.className = `toast ${type}`;
+            el.style.display = 'flex';
+            el.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'triangle-exclamation'}"></i> ${msg}`;
+            clearTimeout(el._t);
+            el._t = setTimeout(() => {
+                el.style.animation = 'toastOut .3s ease forwards';
+                setTimeout(() => { el.style.display = 'none'; el.style.animation = ''; }, 300);
+            }, 3000);
+        }
+
+        /* ── UTIL ── */
+        function escHtml(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        /* ── INIT ── */
+        loadEnquiries();
+    </script>
 </body>
 </html>
