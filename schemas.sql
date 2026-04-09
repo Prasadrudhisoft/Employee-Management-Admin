@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
     org_id      CHAR(36),
     created_at  TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
     created_by  CHAR(36),
-    org_name    VARCHAR(200)    NOT NULL,
+    org_name    VARCHAR(200)    NULL,
 
     -- Single column indexes
     INDEX idx_users_org    (org_id),

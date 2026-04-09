@@ -67,6 +67,8 @@ def save_profile_image(file):
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -118,10 +120,12 @@ def register():
     finally:
         cursor.close()  # ✅ cursor closed BEFORE conn (safe order)
         conn.close()
-        
+
 #Login
 @app.route('/login', methods=['POST'])
 def login():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -179,6 +183,8 @@ def login():
 #Add Admin/New Organization By Super Admin
 @app.route('/addadmin', methods=['GET', 'POST'])
 def addadmin():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -225,6 +231,8 @@ def addadmin():
 
 @app.route('/get_emp', methods=['GET'])
 def get_emp():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -255,11 +263,16 @@ def get_emp():
             'status':'Error',
             'message':str(e)
         })
+    finally:
+        cursor.close()
+        conn.close()
     
 
 
 @app.route('/toggle_emp_status', methods=['POST'])
 def toggle_emp_status():
+    conn = None
+    cursor = None
     """
     Toggle employee status between 'Active' and 'Deactive'.
     Expects JSON body: { "user_id": "<employee_uuid>" }
@@ -310,6 +323,8 @@ def toggle_emp_status():
         
 @app.route('/forgot_pass',methods=['POST'])
 def forgot_pass():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -353,6 +368,8 @@ def forgot_pass():
 
 @app.route('/my_profile', methods=['GET'])
 def my_profile():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -391,6 +408,8 @@ def my_profile():
 
 @app.route('/get_enquiry', methods=['GET'])
 def get_enquiry():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
