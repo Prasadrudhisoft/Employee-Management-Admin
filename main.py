@@ -28,7 +28,7 @@ def add_admin():
 
 @app.route('/admin_status')
 def admin_status():
-    return render_template('Admin_status.html')
+    return render_template('Admin_Status.html')
 
 @app.route('/forgot_password')
 def forgot_password():
