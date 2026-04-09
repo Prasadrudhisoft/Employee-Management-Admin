@@ -65,33 +65,39 @@ def save_profile_image(file):
     file.save(filepath)
     return filepath.replace('\\', '/')
 
-@app.route("/register", methods=['GET','POST'])
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("select * from users where Role='Super_Admin'")
+        cursor.execute("SELECT * FROM users WHERE Role='Super_Admin'")
         super_admin = cursor.fetchall()
-        if not super_admin:
-        
-            data = request.json
 
-            id = str(uuid.uuid4())
-            name = data.get('name')
-            email = data.get('email')
+        if not super_admin:
+            data = request.form  # ✅ FIXED: was request.json
+
+            id       = str(uuid.uuid4())
+            name     = data.get('name')
+            email    = data.get('email')
             password = data.get('password')
-            Role = "Super_Admin"
-            Profile_img = data.get('Profile_img')
-            Status = "Active"
-            Contact = data.get('contact')
-            #org_id = str(uuid.uuid4())
+            Role     = "Super_Admin"
+            Status   = "Active"
+            Contact  = data.get('contact')
+
+            # ✅ FIXED: handle actual file upload instead of reading from JSON
+            profile_file = request.files.get('Profile_img')
+            Profile_img  = save_profile_image(profile_file) if profile_file else ''
+
             hashed_password = generate_password_hash(password)
 
-
-            cursor.execute("INSERT INTO users(id, Name, Email, Password, Role, Profile_img, Status, Contact, created_at) Values(%s,%s,%s,%s,%s,%s,%s,%s,NOW())",(id, name,email,hashed_password,Role, Profile_img, Status, Contact))
+            cursor.execute(
+                "INSERT INTO users(id, Name, Email, Password, Role, Profile_img, Status, Contact, created_at) "
+                "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, NOW())",
+                (id, name, email, hashed_password, Role, Profile_img, Status, Contact)
+            )
             conn.commit()
-        
+
             return jsonify({
                 'status': 'success',
                 'message': 'Super Admin Registered Successfully.'
@@ -101,18 +107,18 @@ def register():
                 'status': 'fail',
                 'message': 'Super Admin Is Already Registered'
             })
-    
+
     except Exception as e:
         print(e)
         return jsonify({
-        "status": "error",
-        "message": str(e)
-    }), 500
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
     finally:
+        cursor.close()  # ✅ cursor closed BEFORE conn (safe order)
         conn.close()
-        cursor.close()
-
+        
 #Login
 @app.route('/login', methods=['POST'])
 def login():
