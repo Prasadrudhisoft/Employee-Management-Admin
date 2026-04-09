@@ -237,10 +237,10 @@ def get_emp():
         conn = get_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        cursor.execute("SELECT * FROM USERS WHERE Status = 'Active' and role = 'Admin'")
+        cursor.execute("SELECT * FROM users WHERE Status = 'Active' and role = 'Admin'")
         active_users = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM USERS WHERE Status != 'Active' and role = 'Admin'")
+        cursor.execute("SELECT * FROM users WHERE Status != 'Active' and role = 'Admin'")
         deactive_users = cursor.fetchall()
 
         if not active_users and not deactive_users:
