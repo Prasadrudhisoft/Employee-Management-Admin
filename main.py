@@ -118,8 +118,8 @@ def register():
         }), 500
 
     finally:
-        cursor.close()  # ✅ cursor closed BEFORE conn (safe order)
-        conn.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
 
 #Login
 @app.route('/login', methods=['POST'])
@@ -177,8 +177,8 @@ def login():
         }), 500
 
     finally:
-        conn.close()
-        cursor.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
 
 #Add Admin/New Organization By Super Admin
 @app.route('/addadmin', methods=['GET', 'POST'])
@@ -225,8 +225,8 @@ def addadmin():
         return jsonify({'status': 'error', 'message': str(e)})
 
     finally:
-        conn.close()
-        cursor.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
 
 
 @app.route('/get_emp', methods=['GET'])
@@ -264,8 +264,8 @@ def get_emp():
             'message':str(e)
         })
     finally:
-        cursor.close()
-        conn.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
     
 
 
@@ -318,8 +318,8 @@ def toggle_emp_status():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
     finally:
-        cursor.close()
-        conn.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
         
 @app.route('/forgot_pass',methods=['POST'])
 def forgot_pass():
@@ -363,8 +363,8 @@ def forgot_pass():
             'message':str(e)
         })
     finally:
-        cursor.close()
-        conn.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
 
 @app.route('/my_profile', methods=['GET'])
 def my_profile():
@@ -402,8 +402,8 @@ def my_profile():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
     finally:
-        cursor.close()
-        conn.close()
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
 
 
 @app.route('/get_enquiry', methods=['GET'])
@@ -438,6 +438,10 @@ def get_enquiry():
             'status':'error',
             'message':str(e)
         })
+    
+    finally:
+        if cursor: cursor.close()  # ✅ safe check before closing
+        if conn:   conn.close()    # ✅ safe check before closing
     
 @app.route('/mark_enquiry_read', methods=['POST'])
 def mark_enquiry_read():
